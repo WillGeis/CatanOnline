@@ -8,6 +8,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.SignalR;
 using System.Reflection.Metadata.Ecma335;
 using System.Data.SqlTypes;
+using System.Security.Cryptography.X509Certificates;
 
 
 /*
@@ -309,6 +310,15 @@ app.MapGet("/processMove", async (HttpContext http, string guid, int moveType, s
             3 => JsonSerializer.Deserialize<GameState.DevCardBuyData>(moveDataJson) ?? throw new ArgumentException("Invalid JSON for DevCardBuyData"),
             4 => JsonSerializer.Deserialize<GameState.PlayDevCardData>(moveDataJson) ?? throw new ArgumentException("Invalid JSON for PlayDevCardData"),
             5 => JsonSerializer.Deserialize<GameState.EndTurnData>(moveDataJson) ?? throw new ArgumentException("Invalid JSON for EndTurnData"),
+            6 => JsonSerializer.Deserialize<GameState.BoatTradeData>(moveDataJson) ?? throw new ArgumentException("Invalid JSON for BoatTradeData"),
+            7 => JsonSerializer.Deserialize<GameState.MoveRobberData>(moveDataJson) ?? throw new ArgumentException("Invalid JSON for MoveRobberData"),
+            8 => JsonSerializer.Deserialize<GameState.StealResourceData>(moveDataJson) ?? throw new ArgumentException("Invalid JSON for StealResourceData"),
+            9 => JsonSerializer.Deserialize<GameState.OfferTradeData>(moveDataJson) ?? throw new ArgumentException("Invalid JSON for OfferTradeData"),
+            10 => JsonSerializer.Deserialize<GameState.AcceptTradeData>(moveDataJson) ?? throw new ArgumentException("Invalid JSON for AcceptTradeData"),
+            11 => JsonSerializer.Deserialize<GameState.CounterTradeData>(moveDataJson) ?? throw new ArgumentException("Invalid JSON for CounterTradeData"),
+            12 => JsonSerializer.Deserialize<GameState.DiscardResourcesData>(moveDataJson) ?? throw new ArgumentException("Invalid JSON for DiscardResourcesData"),
+            13 => JsonSerializer.Deserialize<GameState.ChatMessageData>(moveDataJson) ?? throw new ArgumentException("Invalid JSON for ChatMessageData"),
+            14 => JsonSerializer.Deserialize<GameState.CancelTradeData>(moveDataJson) ?? throw new ArgumentException("Invalid JSON for CancelTradeData"),
             _ => throw new ArgumentException($"[ERROR] Unknown move type: {moveType}")
         };
     }
@@ -741,23 +751,11 @@ public static class GameState
             boatdatajson = PackageBoatData(),
             edgedatajson = PackageEdgeData(),
             winConditionjson = PackageWinCondition(),
+            tradesjson = PackageTradesData(),
             playerNamesList = PlayerNamesList,
             mapSizejson = MapSizeGlobal,
             currentDiceRoll = CurrentDiceRoll,
             currentPlayerIndex = _currentPlayerIndex,
-        };
-    }
-
-    public static object PlayerStateObject(int playerID)
-    {
-        return new
-        {
-            playerDevCardsjson = PackagePlayerDevCards(playerID),
-            playerResourcesjson = PackagePlayerResources(playerID),
-            playerPoints = Players[playerID].Settlements.Count
-                + Players[playerID].Cities.Count * 2
-                + (Players[playerID].HasLargestArmy ? 2 : 0)
-                + (Players[playerID].HasLongestRoad ? 2 : 0),
         };
     }
     
@@ -776,6 +774,18 @@ public static class GameState
         {
             return Results.Json(new { error = ex.Message });
         }
+    }
+    public static object PlayerStateObject(int playerID)
+    {
+        return new
+        {
+            playerDevCardsjson = PackagePlayerDevCards(playerID),
+            playerResourcesjson = PackagePlayerResources(playerID),
+            playerPoints = Players[playerID].Settlements.Count
+                + Players[playerID].Cities.Count * 2
+                + (Players[playerID].HasLargestArmy ? 2 : 0)
+                + (Players[playerID].HasLongestRoad ? 2 : 0),
+        };
     }
 
     public static IResult PlayerStatePackager(int playerID)
@@ -797,7 +807,7 @@ public static class GameState
         {
             return Results.Json(new { error = ex.Message });
         }
-    }
+    } 
 
     public static string[] PlayerNamesList;
 
@@ -982,6 +992,49 @@ public static class GameState
     }
 
     /*
+    public class Trade
+    {
+        public int PlayerID { get; set; }
+        public bool tradeActive { get; set; }
+        public int[] offeredResources { get; set; }
+        public int[] requestedResources { get; set; }
+    }
+
+    public static Dictionary<Guid, Trade> Trades;
+    */
+    public static int[][] PackageTradesData()
+    {
+        if (Trades == null) return new int[0][];
+
+        var activeEntries = Trades.Where(kvp => kvp.Value.tradeActive).ToList();
+        int[][] tradeData = new int[activeEntries.Count][];
+
+        for (int i = 0; i < activeEntries.Count; i++)
+        {
+            var entry = activeEntries[i];
+            Guid tradeId = entry.Key;
+            Trade t = entry.Value;
+
+            int[] flatTrade = new int[15];
+
+            byte[] guidBytes = tradeId.ToByteArray();
+            flatTrade[0] = BitConverter.ToInt32(guidBytes, 0);
+            flatTrade[1] = BitConverter.ToInt32(guidBytes, 4);
+            flatTrade[2] = BitConverter.ToInt32(guidBytes, 8);
+            flatTrade[3] = BitConverter.ToInt32(guidBytes, 12);
+
+            flatTrade[4] = t.PlayerID;
+
+            Array.Copy(t.offeredResources, 0, flatTrade, 5, 5);
+            Array.Copy(t.requestedResources, 0, flatTrade, 10, 5);
+
+            tradeData[i] = flatTrade;
+        }
+
+        return tradeData;
+    }
+
+    /*
     example data from frontend:
 
       boatData = [
@@ -1095,21 +1148,31 @@ public static class GameState
             for (int col = 0; col < xSize; col++)
             {
                 var edgePairs = new ((int x, double y), (int x, double y))[6];
-                
-                edgePairs[0] = ((col,     row + 0.5), (col,     row + 1.0));
+
+                edgePairs[0] = ((col, row + 0.5), (col, row + 1.0));
                 edgePairs[1] = ((col + 1, row + 0.5), (col + 1, row + 1.0));
-                
-                if (bottomHalf) edgePairs[2] = ((col, row + 0.5), (col + 1, row + 0.0));
-                else edgePairs[2] = ((col, row + 0.5), (col, row + 0.0));
-                
-                if (bottomHalf) edgePairs[3] = ((col + 1, row + 0.0), (col + 1, row + 0.5));
-                else edgePairs[3] = ((col, row + 0.0), (col + 1, row + 0.5));
-                
-                if (bottomHalf) edgePairs[4] = ((col, row + 1.5), (col, row + 1.0));
-                else edgePairs[4] = ((col + 1, row + 1.5), (col, row + 1.0));
-                
-                if (bottomHalf) edgePairs[5] = ((col + 1, row + 1.0), (col, row + 1.5));
-                else edgePairs[5] = ((col + 1, row + 1.0), (col + 1, row + 1.5));
+
+                if (bottomHalf)
+                {
+                    edgePairs[2] = ((col, row + 0.5), (col + 1, row + 0.0));
+                    edgePairs[3] = ((col + 1, row + 0.0), (col + 1, row + 0.5));
+                }
+                else
+                {
+                    edgePairs[2] = ((col, row + 0.5), (col, row + 0.0));
+                    edgePairs[3] = ((col, row + 0.0), (col + 1, row + 0.5));
+                }
+
+                if (bottomHalf)
+                {
+                    edgePairs[4] = ((col, row + 1.5), (col, row + 1.0));
+                    edgePairs[5] = ((col + 1, row + 1.0), (col, row + 1.5));
+                }
+                else
+                {
+                    edgePairs[4] = ((col, row + 1.0), (col + 1, row + 1.5));
+                    edgePairs[5] = ((col + 1, row + 1.5), (col + 1, row + 1.0));
+                }
 
                 for (int edgeIdx = 0; edgeIdx < 6; edgeIdx++)
                 {
@@ -1117,13 +1180,18 @@ public static class GameState
 
                     if (NodeGraph.ContainsKey(nodeA) && NodeGraph.ContainsKey(nodeB))
                     {
-                        var edge = NodeGraph[nodeA].Edges.FirstOrDefault(e => e.ConnectedNode == nodeB);
+                        var edge = NodeGraph[nodeA].Edges.FirstOrDefault(e => e.ConnectedNode == nodeB)
+                                ?? NodeGraph[nodeB].Edges.FirstOrDefault(e => e.ConnectedNode == nodeA);
 
-                        if (edge != null && edge.RoadPlayerID != -1) edgeData[currentHex][edgeIdx] = edge.RoadPlayerID;
+                        if (edge != null && edge.RoadPlayerID != -1) 
+                        {
+                            edgeData[currentHex][edgeIdx] = edge.RoadPlayerID;
+                        }
                     }
                 }
                 currentHex++;
             }
+
             if (row < midpoint) xSize++;
             else xSize--;
 
@@ -1249,7 +1317,7 @@ public static class GameState
 
     {
         public int PlayerID { get; set; }
-        public Guid tradeOfferID { get; set; }
+        public string tradeOfferIDString { get; set; }
     }
 
     public class CounterTradeData 
@@ -1273,10 +1341,18 @@ public static class GameState
         public Guid messageID { get; set; }
     }
 
+    public class CancelTradeData
+    {
+        public int PlayerID { get; set; }
+        public Guid tradeOfferID { get; set; }
+    }
+
     public static MoveResult ProcessMove(Player player, int moveType, object moveData)
     {
         if (CurrentPlayer.PlayerID != player.PlayerID && moveType != 12 && moveType != 13 && moveType != 14)
             return new MoveResult { Success = false, Error = "[ERROR] Not your turn" };
+
+        VariousGameChecks();
 
         //Console.WriteLine($"[DEBUG] Game Start Phase: {Globals.GameVars.StartPhase}");
         switch (moveType)
@@ -1318,7 +1394,7 @@ public static class GameState
                     var data = moveData as BoatTradeData;
                     return BoatTrade(data.PlayerID, data.TradeData);
                 }
-            case 7: ////////////////////////
+            case 7: //////////////////////// NOT WRITTEN IN FRONTEND VVVV
                 {
                     var data = moveData as MoveRobberData;
                     return MoveRobber(data.PlayerID, data.XRobber, data.YRobber);
@@ -1336,7 +1412,7 @@ public static class GameState
             case 10:
                 {
                     var data = moveData as AcceptTradeData;
-                    return AcceptTrade(data.PlayerID, data.tradeOfferID);
+                    return AcceptTrade(data.PlayerID, data.tradeOfferIDString);
                 }
             case 11:
                 {
@@ -1352,6 +1428,11 @@ public static class GameState
                 {
                     var data = moveData as ChatMessageData;
                     return ChatMessage(data.PlayerID, data.message, data.messageID);
+                }
+            case 14:
+                {
+                    var data = moveData as CancelTradeData;
+                    return CancelTrade(data.PlayerID, data.tradeOfferID, true);
                 }
             default:
                 {
@@ -1828,7 +1909,6 @@ public static class GameState
 
     private static MoveResult EndTurn(int playerID)
     {
-        VariousGameChecks();
         //Console.WriteLine($"[END TURN DEBUG] playerIndex={_currentPlayerIndex}, snakingBack={_snakingBack}, startPhase={Globals.GameVars.StartPhase}, playerCount={Players.Count}");
         //Console.WriteLine($"[DEBUG] Settlements count {Players[playerID].Settlements.Count}, Roads count: {Players[playerID].Roads.Count}, Snaking back? {_snakingBack}");
         if (Globals.GameVars.StartPhase)
@@ -1857,6 +1937,26 @@ public static class GameState
         }
         else
         {
+            if (Trades != null)
+            {
+                foreach (KeyValuePair<Guid, Trade> entry in Trades)
+                {
+                    Guid tradeId = entry.Key;
+                    Trade t = entry.Value;
+                    if (!t.tradeActive)
+                    {
+                        continue;
+                    }
+                    else if (t.tradeActive)
+                    {
+                        CancelTrade(-1, entry.Key, false);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"[TRADE CANCELATION] This block should not be hit");
+                    }
+                } 
+            }    
             int _pastPlayerIndex = _currentPlayerIndex;
             _currentPlayerIndex = (_currentPlayerIndex + 1) % Players.Count;
             Console.WriteLine($"[TURN] {Players[_pastPlayerIndex].Username}'s turn is over, {CurrentPlayer.Username}'s turn has started??");
@@ -2145,18 +2245,26 @@ public static class GameState
     */
     public static MoveResult OfferTrade(int PlayerID, int[] offeredResources, int[] requestedResources)
     {
-        bool tradeAcceptable = true;
         for (int i = 0; i < offeredResources.Length; i++)
         {
+            if (offeredResources[i] == 0) continue; 
             if (!TradeHelper(PlayerID, offeredResources[i]))
             {
-                return new MoveResult {Success = false, Error = "[ERROR] you do not have enough resources"};
+                return new MoveResult { Success = false, Error = "[ERROR] you do not have enough resources" };
             }
         }
-        Trade trade = new Trade{PlayerID = PlayerID, tradeActive = true, offeredResources = offeredResources, requestedResources = requestedResources};
+
+        Trade trade = new Trade { 
+            PlayerID = PlayerID, 
+            tradeActive = true, 
+            offeredResources = offeredResources, 
+            requestedResources = requestedResources 
+        };
+
         Guid tradeID = Guid.NewGuid();
         Trades.Add(tradeID, trade);
-        return new MoveResult {Success = true, EventType = "tradeOffered"};
+
+        return new MoveResult { Success = true, EventType = "tradeOffered" };
     }
 
     /*
@@ -2168,25 +2276,37 @@ public static class GameState
     }
     */
 
-    public static MoveResult AcceptTrade(int PlayerID, Guid tradeOfferID)
+    public static MoveResult AcceptTrade(int PlayerID, string tradeOfferIDString)
     {
-        Trade trade = Trades[tradeOfferID];
-        foreach (var resource in trade.offeredResources)
+        var targetEntry = Trades.FirstOrDefault(kvp => $"{BitConverter.ToInt32(kvp.Key.ToByteArray(), 0)}|{BitConverter.ToInt32(kvp.Key.ToByteArray(), 4)}|{BitConverter.ToInt32(kvp.Key.ToByteArray(), 8)}|{BitConverter.ToInt32(kvp.Key.ToByteArray(), 12)}" == tradeOfferIDString);
+
+        if (targetEntry.Value == null || !targetEntry.Value.tradeActive)
         {
-            if (!TradeHelper(trade.PlayerID, trade.offeredResources[resource]))
-            {
-                return new MoveResult {Success = false, Error = "[ERROR] target player no longer has resources"};
-            }
-            
+            return new MoveResult { Success = false, Error = "[ERROR] Trade offer no longer exists" };
         }
-        foreach (var resource in trade.requestedResources)
+
+        Guid tradeOfferID = targetEntry.Key;
+        Trade trade = targetEntry.Value;
+
+        foreach (var resourceVal in trade.offeredResources)
         {
-            if (!TradeHelper(PlayerID, trade.requestedResources[resource]))
+            if (resourceVal == 0) continue;
+            if (!TradeHelper(trade.PlayerID, resourceVal)) 
             {
-                return new MoveResult {Success = false, Error = "[ERROR] you do not have the resources to make this trade"};
+                return new MoveResult { Success = false, Error = "[ERROR] target player no longer has resources" };
             }
         }
-        return new MoveResult {Success = true, EventType = "resourcesTraded"};
+
+        foreach (var resourceVal in trade.requestedResources)
+        {
+            if (resourceVal == 0) continue;
+            if (!TradeHelper(PlayerID, resourceVal))
+            {
+                return new MoveResult { Success = false, Error = "[ERROR] you do not have the resources to make this trade" };
+            }
+        }
+        trade.tradeActive = false;
+        return new MoveResult { Success = true, EventType = "resourcesTraded" };
     }
 
     /*
@@ -2286,6 +2406,52 @@ public static class GameState
         chat.messageID = messageID;
         chats[messageID] = chat;
         return new MoveResult {Success = true, EventType = "chatSent"};
+    }
+
+    /*
+    return CancelTrade(data.PlayerID, data.tradeOfferID, true);
+    Trade{PlayerID = PlayerID, tradeActive = true, offeredResources = offeredResources, requestedResources = requestedResources};
+
+    public class Trade
+    {
+        public int PlayerID { get; set; }
+        public bool tradeActive { get; set; }
+        public int[] offeredResources { get; set; }
+        public int[] requestedResources { get; set; }
+    }
+
+    public static Dictionary<Guid, Trade> Trades;
+    */
+    public static MoveResult CancelTrade(int PlayerID, Guid tradeOfferID, Boolean playerInit)
+    {
+        Trade t = Trades[tradeOfferID];
+        Player p = Players[t.PlayerID];
+        if (playerInit && (PlayerID != t.PlayerID))
+        {
+            return new MoveResult {Success = false, Error = "[ERROR] not your trade"};
+        }
+        if (!playerInit)
+        {
+            bool s = true;
+            foreach (var o in t.offeredResources)
+            {
+                if (!TradeHelper(PlayerID, o))
+                {
+                    s = false;
+                }
+                
+            }
+            
+            if (s)
+            {
+                return new MoveResult {Success = s, EventType = "tradeCancelled"};
+            }
+            return new MoveResult {Success = s, Error = "[ERROR] still enough resources"};
+        }
+        else
+        {
+            return new MoveResult {Success = true, EventType = "tradeCancelled"};
+        }
     }
 
     /*
@@ -2408,18 +2574,6 @@ public static class GameState
     }
 
     /*
-    This Code Chunk is a prompt for a user interaction.
-    ==================================================================================================================================================================================================================================================================
-    Constructors are:
-     - none yet
-    ==================================================================================================================================================================================================================================================================
-    */
-    public static int PlayerPromptInt()
-    {
-        return 1; //DO NOT HARDCODE THIS YOU NEED TO DO AN API CALL
-    }
-
-    /*
     This Code Chunk generates the resource map instance for this game and defines constructors for it.
     ==================================================================================================================================================================================================================================================================
     Constructors are:
@@ -2429,7 +2583,7 @@ public static class GameState
     */
     public static Dictionary<(int x, int y), List<(int resourceTypeID, int resourceRoll, bool hasRobber)>> ResourceMap;
 
-    private static int MapSizeGlobal = -1;
+    public static int MapSizeGlobal = Globals.GameVars.MapSize;
 
     public static Dictionary<int, string> ReferenceResourceDirectory;
 

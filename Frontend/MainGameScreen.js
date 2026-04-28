@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Pressable, Text } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Pressable,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import HexGridScreen from "./HexGridScreen";
 import VertexLayer from "./VertexLayer";
 import ResourceOverlay from "./ResourceOverlay";
@@ -10,6 +16,7 @@ import { usePlayer } from "./PlayerContext";
 import useGameHub from "./useGameHub";
 import TurnAndDice from "./TurnAndDiceRoll";
 import Toast from "react-native-toast-message";
+import TradeWindowOverlay from "./TradeWindowOverlay";
 
 const BASE_HEX_SIZE = 60;
 const MAP_DEFAULTS = {
@@ -22,7 +29,7 @@ export default function MainGameScreen({ route }) {
   const { playerNumber, serverUrl, guid } = usePlayer();
   const [gameState, setGameState] = useState(route.params?.gameState);
   const [playerState, setPlayerState] = useState(route.params?.playerState);
-
+  const [showTradeWindow, setShowTradeWindow] = useState(false);
   const [roadPopup, setRoadPopup] = useState(null);
 
   useGameHub(
@@ -71,8 +78,9 @@ export default function MainGameScreen({ route }) {
   const devCards = playerState?.playerDevCardsjson ?? [];
   const playerPoints = playerState?.playerPoints ?? 0;
   const playerTurn = gameState?.currentPlayerIndex ?? -1;
-  const playerNamesList = gameState?.playerNamesList ?? [];
   const currentDiceRoll = gameState?.currentDiceRoll ?? -1;
+  const tradesData = gameState?.tradesjson ?? [];
+  const playerNamesList = gameState?.playerNamesList ?? [];
   const isPlayerTurn = playerTurn === playerNumber;
   const isBuildingRoad = false;
   const roadSelectorVisible = false;
@@ -166,6 +174,21 @@ export default function MainGameScreen({ route }) {
         playerTurn={playerTurn}
       />
 
+      <TouchableOpacity
+        style={styles.tradeOpenButton}
+        onPress={() => setShowTradeWindow(!showTradeWindow)}
+      >
+        <Text style={styles.tradeButtonText}>Trades</Text>
+      </TouchableOpacity>
+
+      {showTradeWindow && (
+        <TradeWindowOverlay
+          trades={tradesData}
+          playerNames={playerNamesList}
+          onClose={() => setShowTradeWindow(false)}
+        />
+      )}
+
       {roadPopup && (
         <RoadBuyScreen
           x={roadPopup.x}
@@ -227,8 +250,25 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+  },
+  tradeOpenButton: {
+    position: "absolute",
+    left: 20,
+    bottom: 20,
+    backgroundColor: "#972929",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderColor: "#ffd000",
+    zIndex: 100, 
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+  },
+  tradeButtonText: {
+    color: "#ffd000",
+    fontWeight: "bold",
+    fontFamily: "Jersey10",
+    fontSize: 24,
+    textAlign: "center",
   },
   endTurnButtonDisabled: {
     backgroundColor: "#4a1a1a",
