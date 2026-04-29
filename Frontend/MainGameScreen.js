@@ -17,6 +17,7 @@ import useGameHub from "./useGameHub";
 import TurnAndDice from "./TurnAndDiceRoll";
 import Toast from "react-native-toast-message";
 import TradeWindowOverlay from "./TradeWindowOverlay";
+import StealFromPlayer from "./StealFromPlayer";
 
 const BASE_HEX_SIZE = 60;
 const MAP_DEFAULTS = {
@@ -54,7 +55,17 @@ export default function MainGameScreen({ route }) {
   );
 
   const MAP_SIZE = Number(gameState?.mapSizejson);
-
+  const rows = [];
+  if (MAP_SIZE) {
+    for (
+      let i = -Math.floor(MAP_SIZE / 2);
+      i <= Math.floor(MAP_SIZE / 2);
+      i++
+    ) {
+      rows.push(MAP_SIZE - Math.abs(i));
+    }
+  }
+  const maxRow = Math.max(...rows);
   if (!gameState || !MAP_DEFAULTS[MAP_SIZE]) {
     return <View style={{ flex: 1, backgroundColor: "#090d18" }} />;
   }
@@ -131,6 +142,32 @@ export default function MainGameScreen({ route }) {
     }
   };
 
+  const handleMoveRobber = async (hexIndex) => {
+    try {
+      const moveData = JSON.stringify({
+        PlayerID: playerNumber,
+        HexIndex: hexIndex,
+      });
+      const url = `${serverUrl}/processMove?guid=${guid}&moveType=7&moveDataJson=${encodeURIComponent(moveData)}`;
+      await fetch(url);
+    } catch (err) {
+      console.error("Move Robber Error:", err);
+    }
+  };
+
+  const handleSteal = async (victimId) => {
+    try {
+      const moveData = JSON.stringify({
+        PlayerID: playerNumber,
+        VictimID: victimId,
+      });
+      const url = `${serverUrl}/processMove?guid=${guid}&moveType=8&moveDataJson=${encodeURIComponent(moveData)}`;
+      await fetch(url);
+    } catch (err) {
+      console.error("Steal Error:", err);
+    }
+  };
+
   ///// *1 //////
 
   return (
@@ -150,14 +187,16 @@ export default function MainGameScreen({ route }) {
             mapConfig={mapConfig}
             serverUrl={serverUrl}
             guid={guid}
+            robberPackage={gameState?.robberpackagejson}
+            onMoveRobber={handleMoveRobber}
             onRoadPopup={(popup) => setRoadPopup(popup)}
           />
+
           <VertexLayer
             vertexData={vertexData}
             boatData={boatData}
             mapConfig={mapConfig}
             isPlayerTurn={isPlayerTurn}
-            //onPressVertex={(row, col) => console.log("Vertex pressed:", row, col)}
             playerNumber={playerNumber}
             serverUrl={serverUrl}
             guid={guid}
@@ -202,6 +241,16 @@ export default function MainGameScreen({ route }) {
           guid={guid}
         />
       )}
+
+      {gameState?.robbervictimsjson &&
+        gameState.robbervictimsjson[0] !== -1 && (
+          <StealFromPlayer
+            victims={gameState.robbervictimsjson}
+            playerNames={playerNamesList}
+            playerNumber={playerNumber}
+            onSelect={handleSteal}
+          />
+        )}
 
       <Pressable
         style={({ pressed }) => [
@@ -259,7 +308,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderColor: "#ffd000",
-    zIndex: 100, 
+    zIndex: 100,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
   },

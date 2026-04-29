@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Image, Text, TouchableOpacity, Pressable  } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Image,
+  Text,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
 import sprite1 from "./assets/hexSprites/sprite1.png";
 import sprite2 from "./assets/hexSprites/sprite2.png";
 import sprite3 from "./assets/hexSprites/sprite3.png";
@@ -8,19 +15,55 @@ import sprite5 from "./assets/hexSprites/sprite5.png";
 import sprite6 from "./assets/hexSprites/sprite6.png";
 
 const spriteMap = [sprite1, sprite2, sprite3, sprite4, sprite5, sprite6];
-const playerColors = ["red", "blue", "green", "yellow", "purple", "orange", "cyan", "magenta", "white", "black"];
+const playerColors = [
+  "red",
+  "blue",
+  "green",
+  "yellow",
+  "purple",
+  "orange",
+  "cyan",
+  "magenta",
+  "white",
+  "black",
+];
 
 function getHexEdgeVertices(hexRow, hexCol, edgeIndex) {
   const R = hexRow;
   const C = hexCol;
   switch (edgeIndex) {
-    case 0: return [[2*R, C], [2*R+1, C]];
-    case 1: return [[2*R, C+1], [2*R+1, C+1]];
-    case 2: return [[2*R, C], [2*R, C+1]];
-    case 3: return [[2*R+2, C], [2*R+2, C+1]];
-    case 4: return [[2*R+1, C], [2*R+2, C]];
-    case 5: return [[2*R+1, C+1], [2*R+2, C+1]];
-    default: return null;
+    case 0:
+      return [
+        [2 * R, C],
+        [2 * R + 1, C],
+      ];
+    case 1:
+      return [
+        [2 * R, C + 1],
+        [2 * R + 1, C + 1],
+      ];
+    case 2:
+      return [
+        [2 * R, C],
+        [2 * R, C + 1],
+      ];
+    case 3:
+      return [
+        [2 * R + 2, C],
+        [2 * R + 2, C + 1],
+      ];
+    case 4:
+      return [
+        [2 * R + 1, C],
+        [2 * R + 2, C],
+      ];
+    case 5:
+      return [
+        [2 * R + 1, C + 1],
+        [2 * R + 2, C + 1],
+      ];
+    default:
+      return null;
   }
 }
 
@@ -31,11 +74,11 @@ const EDGE_POSITIONS = [
   { x: 0.75, y: 0.125 }, // 3 - top right
   { x: 0.25, y: 0.875 }, // 4 - bottom left
   { x: 0.75, y: 0.875 }, // 5 - bottom right
-]
+];
 
 const EDGE_NEIGHBORS = [
   { rowOff: 0, colOff: -1, neighborEdge: 1 }, // 0: left  = neighbor's right
-  { rowOff: 0, colOff:  1, neighborEdge: 0 }, // 1: right = neighbor's left
+  { rowOff: 0, colOff: 1, neighborEdge: 0 }, // 1: right = neighbor's left
   { rowOff: -1, colOff: -1, neighborEdge: 5 }, // 2: top left = neighbor's bottom right (upper-left row is offset)
   { rowOff: -1, colOff: 0, neighborEdge: 4 }, // 3: top right = neighbor's bottom left
   { rowOff: 1, colOff: 0, neighborEdge: 2 }, // 4: bottom left = neighbor's top left (lower row offset)
@@ -45,9 +88,9 @@ const EDGE_NEIGHBORS = [
 // change mapsize accordingly
 function getHexRowsFromLength(totalHexes, topRow = 3, mapSize) {
   //console.log(`MapSize: ${mapSize}, Total Hexes: ${totalHexes}`);
-  
+
   mapSize = Number(mapSize);
-  
+
   if (mapSize < 4) {
     throw new Error("MapSize must be at least 4");
   }
@@ -59,7 +102,7 @@ function getHexRowsFromLength(totalHexes, topRow = 3, mapSize) {
 
   for (let i = 0; i < mapSize; i++) {
     //console.log(`Row ${i}: xSize = ${xSize}, remainingHexes = ${remainingHexes}`);
-    
+
     // Make sure we don’t add more hexes than we have remaining
     const rowHexes = Math.min(xSize, remainingHexes);
     rows.push(rowHexes);
@@ -97,9 +140,25 @@ function buildHexIndexMap(rows) {
   return map;
 }
 
-export default function HexGridScreen({ hexData, hexRollData, robberHex, edgeData, roadSelectorVisible, playerTurn, playerNumber, isBuildingRoad, isPlayerTurn, mapConfig, serverUrl, guid, onRoadPopup }) {
+export default function HexGridScreen({
+  hexData,
+  hexRollData,
+  robberHex,
+  edgeData,
+  roadSelectorVisible,
+  playerTurn,
+  playerNumber,
+  isBuildingRoad,
+  isPlayerTurn,
+  mapConfig,
+  serverUrl,
+  guid,
+  onRoadPopup,
+  robberPackage,
+  onMoveRobber,
+}) {
   const { HEX_WIDTH, HEX_HEIGHT, MAP_SIZE, ROAD_WIDTH } = mapConfig;
-  
+
   if (!hexData?.length) return null;
   if (!edgeData?.length) return null;
 
@@ -153,13 +212,20 @@ export default function HexGridScreen({ hexData, hexRollData, robberHex, edgeDat
     rows.forEach((count, rowIndex) => {
       const offsetX = (maxRow - count) * (HEX_WIDTH / 2);
       const offsetY = rowIndex * (HEX_HEIGHT * 0.75);
-      Array.from({ length: count }).forEach((_, colIndex) => { const hexIndex = bubbleDataIndex++; const edges = edgeData[hexIndex]; const CIRCLE_SIZE = HEX_WIDTH * 0.18;
+      Array.from({ length: count }).forEach((_, colIndex) => {
+        const hexIndex = bubbleDataIndex++;
+        const edges = edgeData[hexIndex];
+        const CIRCLE_SIZE = HEX_WIDTH * 0.18;
         EDGE_POSITIONS.forEach((pos, edgeIdx) => {
           if (edges[edgeIdx] !== -1) return;
           const verts = getHexEdgeVertices(rowIndex, colIndex, edgeIdx);
           roadBubbles.push({
             key: `${hexIndex}-${edgeIdx}`,
-            x: offsetX + colIndex * HEX_WIDTH + pos.x * HEX_WIDTH - CIRCLE_SIZE / 2,
+            x:
+              offsetX +
+              colIndex * HEX_WIDTH +
+              pos.x * HEX_WIDTH -
+              CIRCLE_SIZE / 2,
             y: offsetY + pos.y * HEX_HEIGHT - CIRCLE_SIZE / 2,
             size: CIRCLE_SIZE,
             hexIndex,
@@ -173,7 +239,7 @@ export default function HexGridScreen({ hexData, hexRollData, robberHex, edgeDat
   }
 
   return (
-    <View style={{ width: gridWidth, height: gridHeight, overflow: "visible" }} >
+    <View style={{ width: gridWidth, height: gridHeight, overflow: "visible" }}>
       {rows.map((count, rowIndex) => {
         const offsetX = (maxRow - count) * (HEX_WIDTH / 2);
         const offsetY = rowIndex * (HEX_HEIGHT * 0.75);
@@ -200,7 +266,11 @@ export default function HexGridScreen({ hexData, hexRollData, robberHex, edgeDat
                 <View
                   key={colIndex}
                   pointerEvents="box-none"
-                  style={{ width: HEX_WIDTH, height: HEX_HEIGHT, overflow: "visible" }}
+                  style={{
+                    width: HEX_WIDTH,
+                    height: HEX_HEIGHT,
+                    overflow: "visible",
+                  }}
                 >
                   <View
                     pointerEvents="none"
@@ -208,85 +278,239 @@ export default function HexGridScreen({ hexData, hexRollData, robberHex, edgeDat
                       width: HEX_WIDTH,
                       height: HEX_HEIGHT,
                       overflow: "hidden",
-                      clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
+                      clipPath:
+                        "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
                     }}
                   >
-                    <Image source={sprite} style={{ width: HEX_WIDTH, height: HEX_HEIGHT, resizeMode: "cover" }} />
-                      {/* left */}
-                      <Pressable
-                        onPress={(e) => {
-                          if (isPlayerTurn && edges[0] === -1) {
-                            console.log(`[DEBUG] hexIndex:${hexIndex} edgeIndex:0`);
-                            onRoadPopup({ x: e.nativeEvent.pageX, y: e.nativeEvent.pageY, hexIndex, edgeIndex: 0 });
-                          }
-                        }}
-                        disabled={edges[0] !== -1 || !isPlayerTurn}
-                        style={{ position: "absolute", top: HEX_HEIGHT * 0.25, bottom: HEX_HEIGHT * 0.25, left: 0, width: ROAD_WIDTH, backgroundColor: getEdgeColor(edges[0], isPlayerTurn) }}
-                      />
-                      {/* right */}
-                      <Pressable
-                        onPress={(e) => {
-                          if (isPlayerTurn && edges[1] === -1) {
-                            console.log(`[DEBUG] hexIndex:${hexIndex} edgeIndex:1`);
-                            onRoadPopup({ x: e.nativeEvent.pageX, y: e.nativeEvent.pageY, hexIndex, edgeIndex: 1 });
-                          }
-                        }}
-                        disabled={edges[1] !== -1 || !isPlayerTurn}
-                        style={{ position: "absolute", top: HEX_HEIGHT * 0.25, bottom: HEX_HEIGHT * 0.25, right: 0, width: ROAD_WIDTH, backgroundColor: getEdgeColor(edges[1], isPlayerTurn) }}
-                      />
-                      {/* top left */}
-                      <Pressable
-                        onPress={(e) => {
-                          if (isPlayerTurn && edges[1] === -1) {
-                            console.log(`[DEBUG] hexIndex:${hexIndex} edgeIndex:1`);
-                            onRoadPopup({ x: e.nativeEvent.pageX, y: e.nativeEvent.pageY, hexIndex, edgeIndex: 1 });
-                          }
-                        }}
-                        disabled={edges[2] !== -1 || !isPlayerTurn}
-                        style={{ position: "absolute", width: ROAD_WIDTH, height: HEX_HEIGHT * .5, top: 0, left: 0, backgroundColor: getEdgeColor(edges[2], isPlayerTurn), transform: [{ rotate: "60deg" }, { translateY: -HEX_HEIGHT * 0.25 }] }}
-                      />
-                      {/* top right */}
-                      <Pressable
-                        onPress={(e) => {
-                          if (isPlayerTurn && edges[3] === -1) {
-                            console.log(`[DEBUG] hexIndex:${hexIndex} edgeIndex:3`);
-                            onRoadPopup({ x: e.nativeEvent.pageX, y: e.nativeEvent.pageY, hexIndex, edgeIndex: 3 });
-                          }
-                        }}
-                        disabled={edges[3] !== -1 || !isPlayerTurn}
-                        style={{ position: "absolute", width: ROAD_WIDTH, height: HEX_HEIGHT * .5, top: 0, right: 0, backgroundColor: getEdgeColor(edges[3], isPlayerTurn), transform: [{ rotate: "-60deg" }, { translateY: -HEX_HEIGHT * 0.25 }] }}
-                      />
-                      {/* bottom left */}
-                      <Pressable
-                        onPress={(e) => {
-                        if (isPlayerTurn && edges[4] === -1) {
-                          console.log(`[DEBUG] hexIndex:${hexIndex} edgeIndex:4`);
-                          onRoadPopup({ x: e.nativeEvent.pageX, y: e.nativeEvent.pageY, hexIndex, edgeIndex: 4 });
+                    <Image
+                      source={sprite}
+                      style={{
+                        width: HEX_WIDTH,
+                        height: HEX_HEIGHT,
+                        resizeMode: "cover",
+                      }}
+                    />
+                    {/* left */}
+                    <Pressable
+                      onPress={(e) => {
+                        if (isPlayerTurn && edges[0] === -1) {
+                          console.log(
+                            `[DEBUG] hexIndex:${hexIndex} edgeIndex:0`,
+                          );
+                          onRoadPopup({
+                            x: e.nativeEvent.pageX,
+                            y: e.nativeEvent.pageY,
+                            hexIndex,
+                            edgeIndex: 0,
+                          });
                         }
                       }}
-                        disabled={edges[4] !== -1 || !isPlayerTurn}
-                        style={{ position: "absolute", width: ROAD_WIDTH, height: HEX_HEIGHT * .5, bottom: 0, left: 0, backgroundColor: getEdgeColor(edges[4], isPlayerTurn), transform: [{ rotate: "-60deg" }, { translateY: HEX_HEIGHT * 0.25 }] }}
-                      />
-                      {/* bottom right */}
-                      <Pressable
-                        onPress={(e) => {
-                          if (isPlayerTurn && edges[5] === -1) {
-                            console.log(`[DEBUG] hexIndex:${hexIndex} edgeIndex:5`);
-                            onRoadPopup({ x: e.nativeEvent.pageX, y: e.nativeEvent.pageY, hexIndex, edgeIndex: 5 });
-                          }
+                      disabled={edges[0] !== -1 || !isPlayerTurn}
+                      style={{
+                        position: "absolute",
+                        top: HEX_HEIGHT * 0.25,
+                        bottom: HEX_HEIGHT * 0.25,
+                        left: 0,
+                        width: ROAD_WIDTH,
+                        backgroundColor: getEdgeColor(edges[0], isPlayerTurn),
+                      }}
+                    />
+                    {/* right */}
+                    <Pressable
+                      onPress={(e) => {
+                        if (isPlayerTurn && edges[1] === -1) {
+                          console.log(
+                            `[DEBUG] hexIndex:${hexIndex} edgeIndex:1`,
+                          );
+                          onRoadPopup({
+                            x: e.nativeEvent.pageX,
+                            y: e.nativeEvent.pageY,
+                            hexIndex,
+                            edgeIndex: 1,
+                          });
+                        }
+                      }}
+                      disabled={edges[1] !== -1 || !isPlayerTurn}
+                      style={{
+                        position: "absolute",
+                        top: HEX_HEIGHT * 0.25,
+                        bottom: HEX_HEIGHT * 0.25,
+                        right: 0,
+                        width: ROAD_WIDTH,
+                        backgroundColor: getEdgeColor(edges[1], isPlayerTurn),
+                      }}
+                    />
+                    {/* top left */}
+                    <Pressable
+                      onPress={(e) => {
+                        if (isPlayerTurn && edges[1] === -1) {
+                          console.log(
+                            `[DEBUG] hexIndex:${hexIndex} edgeIndex:1`,
+                          );
+                          onRoadPopup({
+                            x: e.nativeEvent.pageX,
+                            y: e.nativeEvent.pageY,
+                            hexIndex,
+                            edgeIndex: 1,
+                          });
+                        }
+                      }}
+                      disabled={edges[2] !== -1 || !isPlayerTurn}
+                      style={{
+                        position: "absolute",
+                        width: ROAD_WIDTH,
+                        height: HEX_HEIGHT * 0.5,
+                        top: 0,
+                        left: 0,
+                        backgroundColor: getEdgeColor(edges[2], isPlayerTurn),
+                        transform: [
+                          { rotate: "60deg" },
+                          { translateY: -HEX_HEIGHT * 0.25 },
+                        ],
+                      }}
+                    />
+                    {/* top right */}
+                    <Pressable
+                      onPress={(e) => {
+                        if (isPlayerTurn && edges[3] === -1) {
+                          console.log(
+                            `[DEBUG] hexIndex:${hexIndex} edgeIndex:3`,
+                          );
+                          onRoadPopup({
+                            x: e.nativeEvent.pageX,
+                            y: e.nativeEvent.pageY,
+                            hexIndex,
+                            edgeIndex: 3,
+                          });
+                        }
+                      }}
+                      disabled={edges[3] !== -1 || !isPlayerTurn}
+                      style={{
+                        position: "absolute",
+                        width: ROAD_WIDTH,
+                        height: HEX_HEIGHT * 0.5,
+                        top: 0,
+                        right: 0,
+                        backgroundColor: getEdgeColor(edges[3], isPlayerTurn),
+                        transform: [
+                          { rotate: "-60deg" },
+                          { translateY: -HEX_HEIGHT * 0.25 },
+                        ],
+                      }}
+                    />
+                    {/* bottom left */}
+                    <Pressable
+                      onPress={(e) => {
+                        if (isPlayerTurn && edges[4] === -1) {
+                          console.log(
+                            `[DEBUG] hexIndex:${hexIndex} edgeIndex:4`,
+                          );
+                          onRoadPopup({
+                            x: e.nativeEvent.pageX,
+                            y: e.nativeEvent.pageY,
+                            hexIndex,
+                            edgeIndex: 4,
+                          });
+                        }
+                      }}
+                      disabled={edges[4] !== -1 || !isPlayerTurn}
+                      style={{
+                        position: "absolute",
+                        width: ROAD_WIDTH,
+                        height: HEX_HEIGHT * 0.5,
+                        bottom: 0,
+                        left: 0,
+                        backgroundColor: getEdgeColor(edges[4], isPlayerTurn),
+                        transform: [
+                          { rotate: "-60deg" },
+                          { translateY: HEX_HEIGHT * 0.25 },
+                        ],
+                      }}
+                    />
+                    {/* bottom right */}
+                    <Pressable
+                      onPress={(e) => {
+                        if (isPlayerTurn && edges[5] === -1) {
+                          console.log(
+                            `[DEBUG] hexIndex:${hexIndex} edgeIndex:5`,
+                          );
+                          onRoadPopup({
+                            x: e.nativeEvent.pageX,
+                            y: e.nativeEvent.pageY,
+                            hexIndex,
+                            edgeIndex: 5,
+                          });
+                        }
+                      }}
+                      disabled={edges[5] !== -1 || !isPlayerTurn}
+                      style={{
+                        position: "absolute",
+                        width: ROAD_WIDTH,
+                        height: HEX_HEIGHT * 0.5,
+                        bottom: 0,
+                        right: 0,
+                        backgroundColor: getEdgeColor(edges[5], isPlayerTurn),
+                        transform: [
+                          { rotate: "60deg" },
+                          { translateY: HEX_HEIGHT * 0.25 },
+                        ],
+                      }}
+                    />
+                  </View>
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: HEX_WIDTH,
+                      height: HEX_HEIGHT,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      pointerEvents: "none",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "white",
+                        fontSize: HEX_WIDTH * 0.18,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {hexRollData[hexIndex]}
+                    </Text>
+
+                    {robberHex === hexIndex && (
+                      <View
+                        style={{
+                          position: "absolute",
+                          width: HEX_WIDTH * 0.2,
+                          height: HEX_HEIGHT * 0.4,
+                          backgroundColor: "gray",
+                          borderRadius: 4,
                         }}
-                        disabled={edges[5] !== -1 || !isPlayerTurn}
-                        style={{ position: "absolute", width: ROAD_WIDTH, height: HEX_HEIGHT * .5, bottom: 0, right: 0, backgroundColor: getEdgeColor(edges[5], isPlayerTurn), transform: [{ rotate: "60deg" }, { translateY: HEX_HEIGHT * 0.25 }] }}
                       />
-                    </View>
-                    <View style={{ position: "absolute", top: 0, left: 0, width: HEX_WIDTH, height: HEX_HEIGHT, justifyContent: "center", alignItems: "center", pointerEvents: "none" }}>
-                      <Text style={{ color: "white", fontSize: HEX_WIDTH * 0.18, fontWeight: "bold" }}>
-                        {hexRollData[hexIndex]}
-                      </Text>
-                      {robberHex === hexIndex && (
-                        <View style={{ position: "absolute", width: HEX_WIDTH * 0.2, height: HEX_HEIGHT * 0.4, backgroundColor: "gray", borderRadius: 4 }} />
+                    )}
+
+                    {robberPackage &&
+                      robberPackage[0] === 1 &&
+                      robberPackage[1] === playerNumber &&
+                      robberHex !== hexIndex && (
+                        <Pressable
+                          onPress={() => onMoveRobber(hexIndex)}
+                          pointerEvents="auto"
+                          style={{
+                            position: "absolute",
+                            width: HEX_WIDTH * 0.5,
+                            height: HEX_WIDTH * 0.5,
+                            borderRadius: HEX_WIDTH * 0.25,
+                            backgroundColor: "rgba(255, 255, 255, 0.4)",
+                            borderWidth: 2,
+                            borderColor: "white",
+                            zIndex: 50,
+                          }}
+                        />
                       )}
-                    </View>
+                  </View>
                 </View>
               );
             })}
@@ -299,7 +523,12 @@ export default function HexGridScreen({ hexData, hexRollData, robberHex, edgeDat
           onPress={(e) => {
             const { pageX, pageY } = e.nativeEvent;
             console.log(`[DEBUG] hexIndex:${b.hexIndex} edgeIdx:${b.edgeIdx}`);
-            onRoadPopup({ x: pageX, y: pageY, hexIndex: b.hexIndex, edgeIndex: b.edgeIdx });
+            onRoadPopup({
+              x: pageX,
+              y: pageY,
+              hexIndex: b.hexIndex,
+              edgeIndex: b.edgeIdx,
+            });
           }}
           style={{
             position: "absolute",

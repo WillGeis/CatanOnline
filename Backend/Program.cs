@@ -377,6 +377,7 @@ public class GameVars
     public int WinPoints { get; set; }
     public bool GameInitialized { get; set; }
     public bool RegisterPlayer { get; set;}
+    public int CurrentPlayerTurnGlobal { get; set;}
 
     public bool StartPhase { get; set;}
     public int[] RobberCoordinates { get; set; }
@@ -752,6 +753,8 @@ public static class GameState
             edgedatajson = PackageEdgeData(),
             winConditionjson = PackageWinCondition(),
             tradesjson = PackageTradesData(),
+            robberpackagejson = PackageRobberData(),
+            robbervictimsjson = PackageVictimsData(),
             playerNamesList = PlayerNamesList,
             mapSizejson = MapSizeGlobal,
             currentDiceRoll = CurrentDiceRoll,
@@ -927,24 +930,82 @@ public static class GameState
     /*
     Starting at the top left hex as 1, this gives the hex that the robber is on
     */
-    private static int PackageRobberHex()
+    private static int PackageRobberHex_()
     {
+        int h = 0;
         int xSize = 3;
         int midpoint = MapSizeGlobal / 2;
         for (int i = 0; i < MapSizeGlobal; i++)
         {
             for (int j = 0; j < xSize; j++)
             {
-                if (ResourceMap[(i, j)][0].hasRobber) { return i + 1; }
+                Console.Write($"{h},");
+                if (ResourceMap[(i, j)][0].hasRobber) { Console.WriteLine($" \n\n[ROBBER] Robber coords ({j},{i}), robber hex: {h}"); j = xSize; i = MapSizeGlobal; return h; }
+                
+                h++;
             }
-
+            Console.Write($"\n");
             if (i < midpoint) xSize++;
             else xSize--;
 
             if (xSize < 3) break;
         }
 
-        return -1;
+        return h;
+    }
+
+    private static int PackageRobberHex()
+    {
+        int h = 0;
+        int x = Globals.GameVars.RobberCoordinates[0];
+        int y = Globals.GameVars.RobberCoordinates[1];
+        int midpoint = MapSizeGlobal / 2;
+        int xSize = 3;
+        for (int i = 0; i < MapSizeGlobal; i++)
+        {
+            for (int j = 0; j < xSize; j++)
+            {
+                if (i == x && j == y) { return h; }
+                
+                h++;
+            }
+            if (i < midpoint) xSize++;
+            else xSize--;
+        }
+        return h;
+    }
+
+    public static bool robberActive = false;
+
+
+    /*
+    data = [robberMoveable, toPlayer]
+    */
+    private static int[] PackageRobberData()
+    {
+        int result = robberActive ? 1 : 0;
+        //Console.WriteLine($"[ROBBER] Robber state = {robberActive}");
+        int p = Globals.GameVars.CurrentPlayerTurnGlobal;
+
+        return new int[] {result, p};
+    }
+
+    private static int[] PackageVictimsData()
+    {
+        if (robberActive == true)
+        {
+            robberActive = false;
+            if (PossibleVictims.Count == 0)
+            {
+                return new int[] { -1 };
+            }
+            int[] v = PossibleVictims.ToArray();
+            return v;
+        }
+        else
+        {
+            return new int[] { -1 };
+        }
     }
 
     /*
@@ -1296,8 +1357,7 @@ public static class GameState
     public class MoveRobberData
     {
         public int PlayerID { get; set; }
-        public int XRobber { get; set; }
-        public int YRobber { get; set; }
+        public int HexIndex { get; set; }
     }
 
     public class StealResourceData
@@ -1394,12 +1454,12 @@ public static class GameState
                     var data = moveData as BoatTradeData;
                     return BoatTrade(data.PlayerID, data.TradeData);
                 }
-            case 7: //////////////////////// NOT WRITTEN IN FRONTEND VVVV
+            case 7: 
                 {
                     var data = moveData as MoveRobberData;
-                    return MoveRobber(data.PlayerID, data.XRobber, data.YRobber);
+                    return MoveRobber(data.PlayerID, data.HexIndex);
                 }
-            case 8:
+            case 8: //////////////////////// NOT WRITTEN IN FRONTEND VVVV
                 {
                     var data = moveData as StealResourceData;
                     return StealResourcePlayer(data.PlayerID, data.VictimID);
@@ -1935,7 +1995,7 @@ public static class GameState
             Console.WriteLine($"[TURN] {Players[_pastPlayerIndex].Username}'s turn is over, {CurrentPlayer.Username}'s turn has started!!");
             return new MoveResult { Success = true, EventType = "TurnEnded" };
         }
-        else
+        else if (!Globals.GameVars.StartPhase)
         {
             if (Trades != null)
             {
@@ -1959,9 +2019,18 @@ public static class GameState
             }    
             int _pastPlayerIndex = _currentPlayerIndex;
             _currentPlayerIndex = (_currentPlayerIndex + 1) % Players.Count;
+            Globals.GameVars.CurrentPlayerTurnGlobal = _currentPlayerIndex;
             Console.WriteLine($"[TURN] {Players[_pastPlayerIndex].Username}'s turn is over, {CurrentPlayer.Username}'s turn has started??");
             ResourceRollPhase();
+            if (CurrentDiceRoll == 7)
+            {
+                robberActive = true;
+            }
             return new MoveResult { Success = true, EventType = "TurnEnded" };
+        }
+        else
+        {
+            return new MoveResult { Success = false, EventType = "[MAJOR FUCKUP] Will you fucked up"};
         }
     }
 
@@ -2100,20 +2169,53 @@ public static class GameState
         public double YRobber { get; set; }
     }
     */
-    public static MoveResult MoveRobber(int PlayerID, int XRobber, int YRobber)
+    public static List<int> PossibleVictims = new List<int>();
+    
+    public static MoveResult MoveRobber(int PlayerID, int HexIndex)
     {
+        Console.WriteLine($"[ROBBER] Hex recieved: {HexIndex}");
+        int XRobber = -1;
+        int YRobber = -1;
+        int xSize = 3;
+        int MapSize = Globals.GameVars.MapSize;
+        int midpoint = MapSize / 2;
+        int h = HexIndex;
+
+        for (int i = 0; i < MapSize; i++)
+        {
+            for (int j = 0; j < xSize; j++)
+            {
+                //Console.Write($"{h}");
+                if (h == 0) { XRobber = i; YRobber = j; i = MapSizeGlobal; j = xSize; }
+                h--;
+            }
+            if (i < midpoint)
+            {
+                xSize++;
+            }
+            else
+            {
+                xSize--;
+            }
+            //Console.Write("\n");
+        }
+        //Console.WriteLine($"[ROBBER] Hex processed: ({XRobber}, {YRobber}), if condition: {ResourceMap.ContainsKey((XRobber, YRobber))}");
+        //Console.WriteLine("[RESOURCE MAP KEYS] " + string.Join("", ResourceMap.Keys.Select(k => $"({k.Item1},{k.Item2}), ")));
         if (ResourceMap.ContainsKey((XRobber, YRobber)))
         {
+            Console.WriteLine("[ROBBER] condition tripped");
             var oldCoords = (Globals.GameVars.RobberCoordinates[0], Globals.GameVars.RobberCoordinates[1]);
             var oldEntry = ResourceMap[oldCoords][0];
             oldEntry.hasRobber = false;
             ResourceMap[oldCoords][0] = oldEntry;
+            //Console.WriteLine($"[RESOURCE MAP RESET] {ResourceMap[oldCoords][0].hasRobber}");
             Globals.GameVars.RobberCoordinates[0] = XRobber;
             Globals.GameVars.RobberCoordinates[1] = YRobber;
+            //Console.WriteLine($"[ROBBER] ({Globals.GameVars.RobberCoordinates[0]}, {Globals.GameVars.RobberCoordinates[1]})");
             var newEntry = ResourceMap[(XRobber, YRobber)][0];
             newEntry.hasRobber = true;
             ResourceMap[(XRobber, YRobber)][0] = newEntry;
-
+            List<int> connectedPlayers = GetPlayersFromHex(XRobber, YRobber);
             return new MoveResult { Success = true, EventType = "RobberMoved" };
         }
         else
@@ -2994,6 +3096,59 @@ public static class GameState
     ==================================================================================================================================================================================================================================================================
     */
 
+    public static List<int> GetPlayersFromHex(int x, int y)
+    {
+        var connectedNodes = new List<(int x, double y)>();
+        int midpoint = (Globals.GameVars.MapSize / 2);
+        List<int> connectedPlayers = new List<int>();
+
+        connectedNodes.Add((x, y + .5)); // spoke up .5 left .5
+        connectedNodes.Add((x + 1, y + .5)); // spoke up .5 right .5
+        connectedNodes.Add((x, y + 1)); // spoke down .5 left .5
+        connectedNodes.Add((x + 1, y + 1)); // spoke down .5 right .5
+        if (y < midpoint) // getting bigger
+        {
+            connectedNodes.Add((x, y)); // spoke up 1.5 left .5
+            connectedNodes.Add((x + 1, y + 1.5)); // spoke down 1.5 right .5
+        }
+        else if (y > midpoint) // getting smaller
+        {
+            connectedNodes.Add((x + 1, y)); // spoke up 1.5 right .5
+            connectedNodes.Add((x, y + 1.5)); // spoke down 1.5 left .5
+        }
+        else // largest x
+        {
+            connectedNodes.Add((x, y)); // spoke up 1.5 left .5
+            connectedNodes.Add((x, y + 1.5)); // spoke down 1.5 left .5
+        }
+
+        foreach (var p in Players)
+        {
+            foreach (var settlement in p.Settlements)
+            {
+                foreach (var node in connectedNodes)
+                {
+                    if (settlement.x == node.x && settlement.y == node.y && !connectedPlayers.Contains(p.PlayerID))
+                    {
+                        connectedPlayers.Add(p.PlayerID);
+                    }
+                }
+            }
+            foreach (var city in p.Cities)
+            {
+                foreach (var node in connectedNodes)
+                {
+                    if (city.x == node.x && city.y == node.y && !connectedPlayers.Contains(p.PlayerID))
+                    {
+                        connectedPlayers.Add(p.PlayerID);
+                    }
+                }
+            }
+        }
+
+        return connectedPlayers;
+    }
+
     public static void ResourceRollPhase()
     {
         var rolledHexes = GatherRolledHexes();
@@ -3086,6 +3241,35 @@ public static class GameState
                         }
                     }
                 }
+                foreach (var city in player.Cities)
+                {
+                    foreach (var node in resourcedNodes)
+                    {
+                        if (city.x == node.x && city.y == node.y)
+                        {
+                            switch (resourceType)
+                            {
+                                case 1:
+                                    player.Wheat += 2;
+                                    break;
+                                case 2:
+                                    player.Bricks += 2;
+                                    break;
+                                case 3:
+                                    player.Ore += 2;
+                                    break;
+                                case 4:
+                                    player.Wood += 2;
+                                    break;
+                                case 5:
+                                    player.Sheep += 2;
+                                    break;
+                                case 6:
+                                    break;
+                            }
+                        }
+                    }
+                }
             }
         } 
     }
@@ -3098,7 +3282,7 @@ public static class GameState
         int DiceRollTemp = DiceRoll();
         CurrentDiceRoll = DiceRollTemp;
 
-        Console.WriteLine($"[DICEROLL] {DiceRollTemp}");
+        //Console.WriteLine($"[DICEROLL] {DiceRollTemp}");
 
 
         if (DiceRollTemp != 7)
@@ -3119,11 +3303,6 @@ public static class GameState
                 }
             }
         }
-        else if (DiceRollTemp == 7)
-        {
-            
-        }
-
         return rolledHexes;
     }
 
