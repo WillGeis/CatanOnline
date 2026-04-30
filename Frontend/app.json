@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "CatanFrontend",
-    "slug": "CatanFrontend",
+    "name": "Frontend",
+    "slug": "Frontend",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,7 +24,8 @@
     },
     "web": {
       "favicon": "./assets/favicon.png",
-      "bundler": "metro"
+      "bundler": "metro",
+      "output": "static"
     },
     "plugins": [
       "expo-font"
