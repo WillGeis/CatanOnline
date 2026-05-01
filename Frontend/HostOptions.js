@@ -1,35 +1,54 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, StyleSheet, Modal } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  Modal,
+  TextInput,
+} from "react-native";
 import Slider from "@react-native-community/slider";
 import { usePlayer } from "./PlayerContext";
 
 export default function HostOptions({ visible, onClose, onStartGame }) {
   const [mapSize, setMapSize] = useState(null);
   const [victoryPoints, setVictoryPoints] = useState(10);
+  const [tempServerUrl, setTempServerUrl] = useState("http://localhost:5082");
   const { username } = usePlayer();
 
   const handleGo = () => {
-    if (!mapSize) return;
+    console.log("go button pressed");
+    if (!mapSize || !tempServerUrl) return;
+
+    const sanitizedUrl = tempServerUrl.replace(/\/$/, "");
     onStartGame({
       HostUsername: username,
       MapSize: mapSize,
       MapType: 1,
       WinCondition: 1,
       WinPoints: victoryPoints,
+      targetServerUrl: sanitizedUrl,
     });
   };
 
   return (
-    <Modal transparent animationType="fade" visible={visible} onRequestClose={onClose}>
+    <Modal
+      transparent
+      animationType="fade"
+      visible={visible}
+      onRequestClose={onClose}
+    >
       <View style={styles.modalBackground}>
         <View style={styles.modalContainer}>
-
           <Text style={styles.label}>Map Size</Text>
           <View style={styles.mapSizeContainer}>
             {[5, 7, 9].map((size) => (
               <Pressable
                 key={size}
-                style={[styles.mapSizeButton, mapSize === size && styles.mapSizeButtonSelected]}
+                style={[
+                  styles.mapSizeButton,
+                  mapSize === size && styles.mapSizeButtonSelected,
+                ]}
                 onPress={() => setMapSize(size)}
               >
                 <Text style={styles.mapSizeText}>{size}</Text>
@@ -50,14 +69,30 @@ export default function HostOptions({ visible, onClose, onStartGame }) {
             thumbTintColor="#e24b25"
           />
 
+          <Text style={[styles.label, { marginTop: 15 }]}>
+            Backend Tunnel URL
+          </Text>
+          <TextInput
+            style={styles.input}
+            placeholder="https://xxx.trycloudflare.com"
+            placeholderTextColor="#64748b"
+            value={tempServerUrl}
+            onChangeText={setTempServerUrl}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+
           <Pressable style={styles.goButton} onPress={handleGo}>
             <Text style={styles.buttonText}>Host Game</Text>
           </Pressable>
 
           <Pressable onPress={onClose} style={{ marginTop: 12 }}>
-            <Text style={{ color: "#94a3b8", fontFamily: "Jersey10", fontSize: 16 }}>Cancel</Text>
+            <Text
+              style={{ color: "#94a3b8", fontFamily: "Jersey10", fontSize: 16 }}
+            >
+              Cancel
+            </Text>
           </Pressable>
-
         </View>
       </View>
     </Modal>
@@ -65,6 +100,17 @@ export default function HostOptions({ visible, onClose, onStartGame }) {
 }
 
 const styles = StyleSheet.create({
+  input: {
+    width: "100%",
+    backgroundColor: "#0f172a",
+    color: "#00ff99",
+    borderRadius: 8,
+    padding: 10,
+    fontFamily: "monospace",
+    fontSize: 12,
+    borderWidth: 1,
+    borderColor: "#334155",
+  },
   modalBackground: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.7)",

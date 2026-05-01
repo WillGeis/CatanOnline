@@ -4,16 +4,17 @@ import { usePlayer } from "./PlayerContext";
 
 export default function HostWaitingScreen({ route, navigation }) {
   const { hostConfig } = route.params;
+  const { targetServerUrl, ...restOfConfig } = hostConfig;
   const { setGuid, setServerUrl, setPlayerNumber } = usePlayer();
   const [status, setStatus] = useState("Starting server...");
 
   useEffect(() => {
     const pingServer = async () => {
       try {
-        const res = await fetch("http://localhost:5082/host", {
+        const res = await fetch(`${targetServerUrl}/host`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(hostConfig),
+          body: JSON.stringify(restOfConfig),
         });
 
         console.log("HTTP status:", res.status);
@@ -40,9 +41,11 @@ export default function HostWaitingScreen({ route, navigation }) {
         setStatus("Server online. Waiting for players...");
 
         setTimeout(() => {
-          navigation.replace("PlayerWaiting", { serverIP: data.serverIP, playerGUID: data.playerGUID });
+          navigation.replace("PlayerWaiting", {
+            serverIP: data.serverIP,
+            playerGUID: data.playerGUID,
+          });
         }, 1500);
-
       } catch (err) {
         setStatus("Failed to start server");
         console.error(err);
