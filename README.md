@@ -65,6 +65,11 @@ This is your server running, **DO NOT CLOSE THIS OR YOUR GAME WILL END**:
 
 Wait for this line `[CLOUDFLARE TUNNEL] Public URL: https://rand_word0-rand_word1-rand_word2-rand_word3.trycloudflare.com` comes up where `rand_word#` is a random word assigned by cloudflare before trying to start a game.
 
+Note that the public URL that you are given is needed for this box:
+
+<img width="686" height="496" alt="image" src="https://github.com/user-attachments/assets/05dc7c31-9760-4f48-8f01-a83e40bbb0da" />
+
+
 ## Intro
 
 My friends were sad that board games that are typically easy to add players to (i.e. purchase cheap packs of pieces) are not as easy to add players to on their online versions. This is despite the fact that it is as simple as setting player counts to not be bounded, yet these online versions often charge **higher prices** than their physical counterparts.
