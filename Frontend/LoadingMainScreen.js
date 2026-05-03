@@ -5,10 +5,12 @@ import { usePlayer } from "./PlayerContext";
 export default function LoadingScreenMain({ navigation }) {
   const spinAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const { guid, playerNumber, serverUrl } = usePlayer();
+  const { guid, playerNumber, serverUrl, setPlayerNumber } = usePlayer();
 
   useEffect(() => {
     const API_BASE = serverUrl ?? "http://localhost:5082";
+    let isMounted = true;
+    let pollAttempts = 0;
     // Spin animation SWAP WITH MORE FUN THING LATER
     Animated.loop(
       Animated.timing(spinAnim, {
@@ -37,45 +39,39 @@ export default function LoadingScreenMain({ navigation }) {
     ).start();
 
     // Poll gamestate until received 3 seconds total
-    let isMounted = true;
-    let pollTimeout = 0;
     const pollGameState = async () => {
       try {
-        console.log("[DEBUG] Polling /gamestate...");
+        console.log("[DEBUG] Re-syncing Game State...");
         const res = await fetch(`${API_BASE}/gamestate`);
-
-        if (!res.ok) {
-          console.warn("[WARN] /gamestate not ready, retrying...");
-          if (isMounted) setTimeout(pollGameState, 1500);
-          return;
-        }
-
+        if (!res.ok) throw new Error("Game state not ready");
         const gameState = await res.json();
-        console.log("[DEBUG] /gamestate received:", gameState);
-
-        // Fetch player state alongside game state
+        let currentPlayerID = playerNumber;
+        
+        if (currentPlayerID == null && guid) {
+           const match = gameState.Players.find(p => p.Guid === guid);
+           if (match) {
+             currentPlayerID = match.PlayerID;
+             setPlayerNumber(match.PlayerID);
+           }
+        }
         let playerState = null;
-        if (playerNumber != null && playerNumber >= 0) {
-          try {
-            const psRes = await fetch(`${API_BASE}/playerState?playerID=${playerNumber}`);
-            if (psRes.ok) {
-              playerState = await psRes.json();
-              console.log("[DEBUG] /playerState received:", playerState);
-            }
-          } catch (err) {
-            console.warn("[WARN] /playerState fetch failed:", err);
-          }
+        if (currentPlayerID != null) {
+          const psRes = await fetch(`${API_BASE}/playerState?playerID=${currentPlayerID}`);
+          if (psRes.ok) playerState = await psRes.json();
         }
 
-        if (isMounted && gameState) {
+        if (isMounted) {
           navigation.replace("Game", { gameState, playerState });
         }
+
       } catch (err) {
-        console.warn("[WARN] /gamestate fetch failed:", err);
-        pollTimeout++;
-        if (isMounted && pollTimeout < 25) setTimeout(pollGameState, 1500);
-        else {
-          navigation.replace("Lobby");
+        console.warn("[WARN] Polling attempt failed:", err.message);
+        pollAttempts++;
+        
+        if (isMounted && pollAttempts < 10) {
+          setTimeout(pollGameState, 2000); // Wait 2s and try again
+        } else {
+          navigation.replace("Start"); 
         }
       }
     };
@@ -85,7 +81,7 @@ export default function LoadingScreenMain({ navigation }) {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [guid, playerNumber, serverUrl]);
 
   const spin = spinAnim.interpolate({
     inputRange: [0, 1],

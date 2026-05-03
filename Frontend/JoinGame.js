@@ -5,7 +5,8 @@ import { usePlayer } from "./PlayerContext";
 
 export default function JoinGame({ navigation }) {
   const [status, setStatus] = useState("");
-  const { username, guid, setGuid, setServerUrl, setPlayerNumber, serverUrl } = usePlayer();
+  const { username, guid, setGuid, setServerUrl, setPlayerNumber, serverUrl } =
+    usePlayer();
 
   useEffect(() => {
     const loadStored = async () => {
@@ -16,8 +17,14 @@ export default function JoinGame({ navigation }) {
   }, []);
 
   const joinGame = async () => {
-    if (!username) { setStatus("Missing username"); return; }
-    if (!serverUrl) { setStatus("Missing server URL"); return; }
+    if (!username) {
+      setStatus("Missing username");
+      return;
+    }
+    if (!serverUrl) {
+      setStatus("Missing server URL");
+      return;
+    }
 
     try {
       const storedGuid = await AsyncStorage.getItem("playerGuid");
@@ -34,7 +41,9 @@ export default function JoinGame({ navigation }) {
       const data = await res.json();
 
       if (!res.ok) {
-        setStatus("[ERROR] Failed to join: " + (data || "[ERROR] Unknown error"));
+        setStatus(
+          "[ERROR] Failed to join: " + (data || "[ERROR] Unknown error"),
+        );
         return;
       }
 
@@ -45,6 +54,10 @@ export default function JoinGame({ navigation }) {
       setServerUrl(serverUrl);
       setPlayerNumber(data.playerId);
 
+      await AsyncStorage.setItem("playerGuid", data.guid);
+      await AsyncStorage.setItem("playerId", data.playerId.toString());
+      await AsyncStorage.setItem("lastServerUrl", serverUrl);
+
       if (data.reconnected) {
         setStatus("[CONNECTION] Reconnected to existing session!");
       } else {
@@ -52,7 +65,6 @@ export default function JoinGame({ navigation }) {
       }
 
       navigation.navigate("PlayerWaiting", { serverIP: serverUrl });
-
     } catch (err) {
       console.error("[ERROR] Failed to join:", err);
       setStatus("[ERROR] Failed to join game.");
@@ -83,17 +95,17 @@ export default function JoinGame({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: "#090d18", 
-    justifyContent: "center", 
-    alignItems: "center" 
+  container: {
+    flex: 1,
+    backgroundColor: "#090d18",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  title: { 
-    fontSize: 64, 
-    fontFamily: "Jersey10", 
-    color: "#e0e7ff", 
-    marginBottom: 20 
+  title: {
+    fontSize: 64,
+    fontFamily: "Jersey10",
+    color: "#e0e7ff",
+    marginBottom: 20,
   },
   input: {
     width: "80%",
@@ -104,21 +116,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 20,
   },
-  button: { 
-    backgroundColor: "#e24b25", 
-    paddingVertical: 16, 
-    paddingHorizontal: 60, 
-    borderRadius: 12 
+  button: {
+    backgroundColor: "#e24b25",
+    paddingVertical: 16,
+    paddingHorizontal: 60,
+    borderRadius: 12,
   },
-  buttonText: { 
-    fontSize: 24, 
-    fontFamily: "Jersey10", 
-    color: "#000" 
+  buttonText: {
+    fontSize: 24,
+    fontFamily: "Jersey10",
+    color: "#000",
   },
-  status: { 
-    marginTop: 20, 
-    color: "#94a3b8", 
-    fontFamily: "Jersey10", 
-    fontSize: 18 
+  status: {
+    marginTop: 20,
+    color: "#94a3b8",
+    fontFamily: "Jersey10",
+    fontSize: 18,
   },
 });

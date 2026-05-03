@@ -38,6 +38,10 @@ export default function HostWaitingScreen({ route, navigation }) {
         setServerUrl(data.serverIP);
         setPlayerNumber(0);
 
+        await AsyncStorage.setItem("playerGuid", data.playerGUID);
+        await AsyncStorage.setItem("playerId", "0");
+        await AsyncStorage.setItem("lastServerUrl", data.serverIP);
+
         setStatus("Server online. Waiting for players...");
 
         setTimeout(() => {

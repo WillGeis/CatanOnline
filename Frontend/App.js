@@ -1,4 +1,3 @@
-
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
@@ -15,29 +14,44 @@ import JoinGame from "./JoinGame";
 import LoadingScreenMain from "./LoadingMainScreen";
 import { PlayerProvider, usePlayer } from "./PlayerContext";
 
-
 const Stack = createNativeStackNavigator();
 
 // /* //this the main app, I comment/uncomment it to test the game
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [initialRoute, setInitialRoute] = useState("Start");
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
 
   useEffect(() => {
-    async function loadFonts() {
-      await Font.loadAsync({
-        Jersey10: require("./assets/fonts/Jersey10-Regular.ttf"),
-      });
-      setFontsLoaded(true);
+    async function prepareApp() {
+      try {
+        await Font.loadAsync({
+          Jersey10: require("./assets/fonts/Jersey10-Regular.ttf"),
+        });
+
+        const savedGuid = await AsyncStorage.getItem("playerGuid");
+        const savedUrl = await AsyncStorage.getItem("lastServerUrl");
+
+        if (savedGuid && savedUrl) {
+          setInitialRoute("PlayerWaiting");
+        }
+      } catch (e) {
+        console.warn("Error loading session:", e);
+      } finally {
+        setFontsLoaded(true);
+        setIsCheckingSession(false);
+      }
     }
-    loadFonts();
+
+    prepareApp();
   }, []);
 
-  if (!fontsLoaded) return null;
+  if (!fontsLoaded || isCheckingSession) return null;
 
   return (
     <PlayerProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Start">
+        <Stack.Navigator initialRouteName={initialRoute}>
           <Stack.Screen
             name="Start"
             component={StartScreen}
@@ -53,6 +67,14 @@ export default function App() {
               headerTitleAlign: "center",
             }}
           />
+
+          <Stack.Screen
+            name="PlayerWaiting"
+            component={PlayerWaitingScreen}
+            options={{ headerShown: false }}
+            initialParams={{ isReconnecting: initialRoute === "PlayerWaiting" }}
+          />
+
           <Stack.Screen
             name="Lobby"
             component={LobbyScreen}
@@ -67,29 +89,25 @@ export default function App() {
               headerTitleAlign: "center",
             }}
           />
+
           <Stack.Screen
             name="Game"
             component={MainGameScreen}
-            options={{ 
+            options={{
               title: "Game Screen",
               headerTransparent: true,
               headerShadowVisible: false,
               headerTitleStyle: {
                 fontFamily: "Jersey10",
                 fontSize: 28,
-                color:"#1e3a8a",
-              }, 
+                color: "#1e3a8a",
+              },
             }}
-          />
-          <Stack.Screen
-            name="HostWaiting"
-            component={HostWaitingScreen}
-            options={{ headerShown: false }}
           />
 
           <Stack.Screen
-            name="PlayerWaiting"
-            component={PlayerWaitingScreen}
+            name="HostWaiting"
+            component={HostWaitingScreen}
             options={{ headerShown: false }}
           />
 
@@ -119,10 +137,10 @@ const styles = StyleSheet.create({
   },
 
   headerTitleStyle: {
-  fontFamily: "Jersey10",
-  fontSize: 24,
-  color: "#fff", 
-},
+    fontFamily: "Jersey10",
+    fontSize: 24,
+    color: "#fff",
+  },
 });
 // */
 
