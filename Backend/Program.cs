@@ -9,7 +9,13 @@ using Microsoft.AspNetCore.SignalR;
 using System.Reflection.Metadata.Ecma335;
 using System.Data.SqlTypes;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
+using System.IO;
 
+/*
+note to self, run `dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true --self-contained true`
+and look in ./bin/Release/net9.0/win-x64/publish/Backend.exe for the server executable
+*/
 
 /*
 This Is the API Chunk, I have it at the top because I hate it the most
@@ -37,18 +43,24 @@ This is the security for all devices
 */
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.WithOrigins("https://incolaeterrae.com", "https://www.incolaeterrae.com")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
-    });
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
 });
 
 var app = builder.Build();
 
-app.UseDeveloperExceptionPage();
+app.UseStaticFiles();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
 app.UseCors("AllowAll"); // switch to allowall to not just test from your PC will
 
 app.MapHub<GameHub>("/gamehub");
@@ -58,14 +70,26 @@ var gameVars = new GameVars();
 string? cloudflarePublicUrl = null;
 
 async Task StartCloudflareTunnelAsync()
+{builder.Services.AddCors(options =>
 {
-    Console.WriteLine("[CLOUDFLARE TUNNEL] Cloudlfare Starting");
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
+    Console.WriteLine("[CLOUDFLARE TUNNEL] Starting cloudflared...");
+    cloudflarePublicUrl = null;
+
     try
     {
         var psi = new ProcessStartInfo
         {
-            FileName = "cloudflared", // cloudflare properly setup
-            Arguments = "tunnel --url http://localhost:5082 --loglevel info",
+            FileName = "cloudflared",
+            Arguments = "tunnel --url http://127.0.0.1:5082 --loglevel info",
+            //Arguments = "tunnel --url http://127.0.0.1:5082 --loglevel debug",
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
@@ -73,53 +97,47 @@ async Task StartCloudflareTunnelAsync()
         };
 
         var process = new Process { StartInfo = psi, EnableRaisingEvents = true };
-        process.OutputDataReceived += (sender, e) =>
-        {
-            if (string.IsNullOrWhiteSpace(e.Data)) return;
 
-
-            if (e.Data.Contains("trycloudflare.com"))
-            {
-                var match = Regex.Match(e.Data, @"https://[^\s]+");
-                if (match.Success)
-                {
-                    cloudflarePublicUrl = match.Value;
-                    //Console.WriteLine("[SANITY CHECK] sanity check");
-                    Console.WriteLine($"[CLOUDFLARE TUNNEL] Public URL: {cloudflarePublicUrl}");
-                }
-            }
-        };
-
-        process.ErrorDataReceived += (sender, e) => // not really sure why this works but this causes the url to be correctly passed to the frontend
+        DataReceivedEventHandler tunnelHandler = (sender, e) =>
         {
             if (string.IsNullOrWhiteSpace(e.Data)) return;
 
             if (e.Data.Contains("trycloudflare.com"))
             {
-                var match = Regex.Match(e.Data, @"https://[^\s]+");
+                var match = Regex.Match(e.Data, @"https://[a-z0-9-]+\.trycloudflare\.com");
                 if (match.Success)
                 {
                     cloudflarePublicUrl = match.Value;
+                    Console.WriteLine($"[CLOUDFLARE TUNNEL] Connection Established!");
                     Console.WriteLine($"[CLOUDFLARE TUNNEL] Public URL: {cloudflarePublicUrl}");
                 }
             }
         };
 
+        process.OutputDataReceived += tunnelHandler;
+        process.ErrorDataReceived += tunnelHandler;
 
         process.Start();
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
 
-        // make sure public url is available
-        while (string.IsNullOrEmpty(cloudflarePublicUrl))
+        int attempts = 0;
+        int maxAttempts = 60;
+
+        while (string.IsNullOrEmpty(cloudflarePublicUrl) && attempts < maxAttempts)
         {
             await Task.Delay(500);
+            attempts++;
         }
 
+        if (string.IsNullOrEmpty(cloudflarePublicUrl))
+        {
+            Console.WriteLine("[ERROR] Cloudflare tunnel timed out. Check your internet connection.");
+        }
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"[ERROR] Could not start cloudflared: {ex.Message}");
+        Console.WriteLine($"[ERROR] Failed to launch cloudflared: {ex.Message}");
     }
 }
 
@@ -268,7 +286,23 @@ app.MapGet("/players", () =>
 
 app.MapPost("/startGame", async (HttpContext http) =>
 {
-    GameState.StartGame();
+    GameState.StartGame(false);
+    var hubContext = http.RequestServices.GetRequiredService<IHubContext<GameHub>>();
+
+    var gameState = GameState.GameStateObject();
+    await hubContext.Clients.Group("game").SendAsync("GameStateUpdated", gameState);
+    foreach (var p in GameState.GetPlayers().Where(p => p.IsConnected))
+    {
+        var playerState = GameState.PlayerStateObject(p.PlayerID);
+        await hubContext.Clients.Client(p.ConnectionId).SendAsync("PlayerStateUpdated", playerState);
+    }
+
+    return Results.Ok(new { success = true, message = "Game started!" });
+});
+
+app.MapPost("/startGameFromSaveFile", async (HttpContext http) =>
+{
+    GameState.StartGame(true);
     var hubContext = http.RequestServices.GetRequiredService<IHubContext<GameHub>>();
 
     var gameState = GameState.GameStateObject();
@@ -370,6 +404,7 @@ record HostGameRequest(
 );
 public class GameVars
 {
+    
     public int MapSize { get; set; }
     public int MapType { get; set; } = 1; // default until I code it in
     public int NumTilesTotal { get; set; } = -1;
@@ -382,6 +417,16 @@ public class GameVars
     public bool StartPhase { get; set;}
     public int[] RobberCoordinates { get; set; }
     public int Turn { get; set; } = -1;
+    // below are not used during the game, but are used for save state
+    public Dictionary<Guid, GameState.Trade> Trades { get; set; } = new();
+    public Dictionary<int, string> DevelopmentCardDirectory { get; set; } = new();
+    public Dictionary<(int, int), List<(int, int, bool)>> ResourceMap { get; set; } = new();
+    public Dictionary<(int, double), Node> NodeGraph { get; set; } = new();
+    public Dictionary<double, int> NodeLayout { get; set; } = new();
+    public Dictionary<(int, double), int> BoatConnections { get; set; } = new();
+    public List<Player> Players { get; set; } = new();
+
+    // below are fillers, used in GameState just as props here for saves
 }
 
 public static class Globals
@@ -392,7 +437,16 @@ public static class Globals
 public record PlayerRegistrationRequest(string Username, Guid? ExistingGuid);
 
 /*
-
+This is the the bit that broadcasts changes to the clients not making current moves
+==================================================================================================================================================================================================================================================================
+Resources are:
+ - GameHub
+     - OnConnectedAsync
+     - OnDisconnectedAsync
+     - JoinRoom
+     - PlayerMove
+     - DeserializeMoveData
+ ==================================================================================================================================================================================================================================================================
 */
 public class GameHub : Hub
 {
@@ -500,13 +554,95 @@ public class GameHub : Hub
 }
 
 /*
-This is going to be the handler for the API when the actual game begins
+This is the actual game logic/manipulators that run the game, for all intents and purposes the games "engine", though I am not sure how much you can really ascribe to this game having an engine; at least, not until I make the cpp port.
 ==================================================================================================================================================================================================================================================================
 Resources are:
- - ill figure it out
+ - GameState
+    - EntryPoint
+    - PlayerLoginLoop
+    - RegisterPlayer
+    - GetPlayers
+    - GetWinner
+    - StartGame
+    - CheckResources
+    - GameStateObject
+    - GameStatePackager
+    - PlayerStateObject
+    - PlayerStatePackager
+    - PackagePlayerNames
+    - PackagePlayerDevCards
+    - PackagePlayerResources
+    - PackageResourceMap
+    - PackageRobberHex_
+    - PackageRobberHex
+    - PackageRobberData
+    - PackageVictimsData
+    - PackageNodeData
+    - PackageTradesData
+    - PackageBoatData
+    - PackageEdgeData
+    - PackageWinCondition
+    - PlaceSettlementData
+    - PlaceCityData
+    - PlaceRoadData
+    - PlaceRoadDataFrontend
+    - DevCardBuyData
+    - PlayDevCardData
+    - EndTurnData
+    - BoatTradeData
+    - MoveRobberData
+    - StealResourceData
+    - OfferTradeData
+    - AcceptTradeData
+    - CounterTradeData
+    - DiscardResourcesData
+    - ChatMessageData
+    - CancelTradeData
+    - ProcessMove
+    - PlaceRoadInterpreter
+    - VariousGameChecks
+    - CheckWinCondition
+    - GameStartupPhase
+    - PlaceSettlement
+    - PlaceCity
+    - PlaceRoad
+    - BuyDevelopmentCard
+    - PlayDevelopmentCard
+    - EndTurn
+    - boatTradeCheckRecursive
+    - BoatTrade
+    - MoveRobber
+    - StealResourcePlayer
+    - Trade
+    - TradeHelper
+    - OfferTrade
+    - AcceptTrade
+    - CounterTrade
+    - DiscardResources
+    - ChatMessageStorage
+    - ChatMessage
+    - CancelTrade
+    - DevelopmentCardDirectoryStarter
+    - DevelopmentCardHandler
+    - ReferenceResourceDirectoryStarter
+    - GenerateNewMaps
+    - NumberOfTiles
+    - resourceValueGenerator
+    - GenerateNodeGraph
+    - EdgeConnectorInitializer
+    - AddNode
+    - AddEdge
+    - InitializeBoatConnections
+    - GetPlayersFromHex
+    - ResourceRollPhase
+    - AssociatePlayerResources
+    - GatherRolledHexes
+    - DiceRoll
+    - GetPlayerRobberInput
+    - InitializeRobber
+    - MoveRobberAction
  ==================================================================================================================================================================================================================================================================
 */
-
 public static class GameState
 {
 
@@ -526,6 +662,7 @@ public static class GameState
      - Players: list of player objects
      - NextPlayerId: this is just a counter to assign ids
      - HostGUID: saves GUID for host so host can use extra permissions
+
     ==================================================================================================================================================================================================================================================================
     */
     private static List<Player> Players = new List<Player>();
@@ -615,11 +752,29 @@ public static class GameState
     */
     public static bool GameStarted { get; private set; } = false;
 
-    public static bool StartGame() //=> GameStarted = true;
+    public static bool StartGame(bool load) //=> GameStarted = true;
     {
+        if (load)
+        {
+            GameSave.LoadGame();
+            if (ResourceMap == null)
+            {
+                Console.WriteLine("[ERROR] Cannot start game: ResourceMap is not initialized!");
+                return false;
+            }
+            if (NodeGraph == null)
+            {
+                Console.WriteLine("[ERROR] Cannot start game: NodeGraph is not initialized!");
+                return false;
+            }
+            if (NodeLayout == null)
+            {
+                Console.WriteLine("[WARN] NodeLayout is null!");
+            }
+            return true;
+        }
         MapSizeGlobal = Globals.GameVars.MapSize;
         GameStartupPhase(Players.Count, Globals.GameVars.MapType, Globals.GameVars.MapSize);
-        
         if (ResourceMap == null)
         {
             Console.WriteLine("[ERROR] Cannot start game: ResourceMap is not initialized!");
@@ -655,7 +810,6 @@ public static class GameState
         return true;
     }
 
-    // Purchase type ID: 0 = settlement, 1 = city, 2 = road, 3 = development card
     /*
     This Code Chunk contains the utilities
     ==================================================================================================================================================================================================================================================================
@@ -1969,6 +2123,29 @@ public static class GameState
 
     private static MoveResult EndTurn(int playerID)
     {
+        /*
+        at end turn it updates the stuff
+
+        public Dictionary<Guid, Trade> Trades { get; set; }
+        public Dictionary<int, string> DevelopmentCardDirectory { get; set; }
+        public Dictionary<(int, int), List<(int, int, bool)>> ResourceMap { get; set; }
+        public Dictionary<(int, double), Node> NodeGraph { get; set; }
+        public Dictionary<double, int> NodeLayout { get; set; }
+        public Dictionary<(int, double), int> BoatConnections { get; set; }
+        public List<Player> Players { get; set; }
+        */
+
+        Globals.GameVars.Trades = Trades;
+        Globals.GameVars.DevelopmentCardDirectory = DevelopmentCardDirectory;
+        Globals.GameVars.ResourceMap = ResourceMap;
+        Globals.GameVars.NodeGraph = NodeGraph;
+        Globals.GameVars.NodeLayout = NodeLayout;
+        Globals.GameVars.BoatConnections = BoatConnections;
+        Globals.GameVars.Players = Players;
+
+        // TODO: put call to the SaveGame (GameSave?) method
+        GameSave.SaveGame(Globals.GameVars);
+        
         //Console.WriteLine($"[END TURN DEBUG] playerIndex={_currentPlayerIndex}, snakingBack={_snakingBack}, startPhase={Globals.GameVars.StartPhase}, playerCount={Players.Count}");
         //Console.WriteLine($"[DEBUG] Settlements count {Players[playerID].Settlements.Count}, Roads count: {Players[playerID].Roads.Count}, Snaking back? {_snakingBack}");
         if (Globals.GameVars.StartPhase)
@@ -3411,4 +3588,24 @@ public class MoveResult
     public bool Success { get; set; }
     public string? Error { get; set; }
     public string? EventType { get; set; }
+}
+
+public static class GameSave
+{
+    public static string filePath = "./saveFile";
+    public static void SaveGame(GameVars data)
+    {
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        string jsonString = JsonSerializer.Serialize(data, options);
+        
+        File.WriteAllText(filePath, jsonString);
+    }
+
+    public static GameVars LoadGame()
+    {
+        if (!File.Exists(filePath)) return null;
+
+        string jsonString = File.ReadAllText(filePath);
+        return JsonSerializer.Deserialize<GameVars>(jsonString);
+    }
 }
