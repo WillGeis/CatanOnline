@@ -133,4 +133,11 @@ const styles = StyleSheet.create({
     fontFamily: "Jersey10",
     fontSize: 18,
   },
+  resolve: {
+    alias: {
+      "react-native$": "react-native-web",
+      "@react-native-async-storage/async-storage":
+        "@react-native-async-storage/async-storage/lib/module/index.js",
+    },
+  },
 });

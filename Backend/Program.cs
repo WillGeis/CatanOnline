@@ -46,42 +46,38 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll",
         policy =>
         {
-            policy.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader();
+            policy.AllowCredentials()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .WithOrigins(
+                    "http://localhost:8081",
+                    "https://incolaeterrae.com",
+                    "https://github.com/WillGeis.github.io"
+                );
         });
 });
 
 var app = builder.Build();
 
-app.UseStaticFiles();
-
+/*
+app.UseStaticFiles();  // middleware added to support local caching
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
+*/
 
-app.UseCors("AllowAll"); // switch to allowall to not just test from your PC will
+app.UseCors("AllowAll"); // switch to allowall to not just test from your PC will - why is this comment here
 
 app.MapHub<GameHub>("/gamehub");
 
-var gameVars = new GameVars();
-
 string? cloudflarePublicUrl = null;
 
+var gameVars = new GameVars();
+
 async Task StartCloudflareTunnelAsync()
-{builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        policy =>
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader();
-        });
-});
-    Console.WriteLine("[CLOUDFLARE TUNNEL] Starting cloudflared...");
-    cloudflarePublicUrl = null;
+    Console.WriteLine("[CLOUDFLARE TUNNEL] Attempting cloudflare connection...");
 
     try
     {
@@ -102,14 +98,18 @@ async Task StartCloudflareTunnelAsync()
         {
             if (string.IsNullOrWhiteSpace(e.Data)) return;
 
+            //Console.WriteLine($"[CLOUDFLARE TUNNEL] {e.Data}"); // event payload
+
             if (e.Data.Contains("trycloudflare.com"))
             {
                 var match = Regex.Match(e.Data, @"https://[a-z0-9-]+\.trycloudflare\.com");
                 if (match.Success)
                 {
                     cloudflarePublicUrl = match.Value;
+                    Console.WriteLine("\n\n\n==================================================");
                     Console.WriteLine($"[CLOUDFLARE TUNNEL] Connection Established!");
                     Console.WriteLine($"[CLOUDFLARE TUNNEL] Public URL: {cloudflarePublicUrl}");
+                    Console.WriteLine("==================================================\n\n\n");
                 }
             }
         };
@@ -121,18 +121,14 @@ async Task StartCloudflareTunnelAsync()
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
 
-        int attempts = 0;
-        int maxAttempts = 60;
-
-        while (string.IsNullOrEmpty(cloudflarePublicUrl) && attempts < maxAttempts)
+        for (int i = 0; i < 60 && string.IsNullOrEmpty(cloudflarePublicUrl); i++)
         {
-            await Task.Delay(500);
-            attempts++;
+            await Task.Delay(1000); // 1 second polling
         }
 
         if (string.IsNullOrEmpty(cloudflarePublicUrl))
         {
-            Console.WriteLine("[ERROR] Cloudflare tunnel timed out. Check your internet connection.");
+            Console.WriteLine("[ERROR] THIS BLOCK SHOULD NOT GET HIT");
         }
     }
     catch (Exception ex)
@@ -141,7 +137,7 @@ async Task StartCloudflareTunnelAsync()
     }
 }
 
-_ = StartCloudflareTunnelAsync(); // entrypoint for cloudflared
+_ = Task.Run(StartCloudflareTunnelAsync); // entrypoint for cloudflared
 
 app.MapMethods("/{**path}", new[] { "OPTIONS" }, (HttpContext ctx) =>
 {

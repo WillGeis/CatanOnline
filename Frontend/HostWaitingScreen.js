@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { usePlayer } from "./PlayerContext";
 
 export default function HostWaitingScreen({ route, navigation }) {
