@@ -166,12 +166,13 @@ export default function PlayerWaitingScreen({ route, navigation }) {
       <Text style={styles.title}>Players Connected:</Text>
 
       <View style={styles.playerList}>
-        {players.map((p, i) => (
-          <Text key={p.guid} style={styles.player}>
-            Player {i + 1}: {p.username}
-            {i === 0 ? " (Host)" : ""}
-          </Text>
-        ))}
+        {Array.isArray(players) &&
+          players.map((p, i) => (
+            <Text key={p.guid} style={styles.player}>
+              Player {i + 1}: {p.username}
+              {i === 0 ? " (Host)" : ""}
+            </Text>
+          ))}
       </View>
 
       <Text style={styles.status}>
