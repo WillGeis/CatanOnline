@@ -26,10 +26,12 @@ export default function JoinGame({ navigation }) {
       return;
     }
 
+    const cleanUrl = serverUrl.replace(/\/$/, "");
+
     try {
       const storedGuid = await AsyncStorage.getItem("playerGuid");
 
-      const res = await fetch(`${serverUrl}/register`, {
+      const res = await fetch(`${cleanUrl}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -38,8 +40,6 @@ export default function JoinGame({ navigation }) {
         }),
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
         setStatus(
           "[ERROR] Failed to join: " + (data || "[ERROR] Unknown error"),
@@ -47,16 +47,18 @@ export default function JoinGame({ navigation }) {
         return;
       }
 
+      const data = await res.json();
+
+      await AsyncStorage.setItem("lastServerUrl", cleanUrl);
       await AsyncStorage.setItem("playerGuid", data.guid);
-      await AsyncStorage.setItem("lastServerUrl", serverUrl);
 
       setGuid(data.guid);
-      setServerUrl(serverUrl);
+      setServerUrl(cleanUrl);
       setPlayerNumber(data.playerId);
 
       await AsyncStorage.setItem("playerGuid", data.guid);
       await AsyncStorage.setItem("playerId", data.playerId.toString());
-      await AsyncStorage.setItem("lastServerUrl", serverUrl);
+      await AsyncStorage.setItem("lastServerUrl", cleanUrl);
 
       if (data.reconnected) {
         setStatus("[CONNECTION] Reconnected to existing session!");

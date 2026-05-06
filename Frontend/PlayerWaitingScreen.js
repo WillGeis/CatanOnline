@@ -4,14 +4,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { usePlayer } from "./PlayerContext";
 import useGameHub from "./useGameHub";
 
-const API_BASE = "http://localhost:5082";
+//const API_BASE = "http://localhost:5082";
 
 export default function PlayerWaitingScreen({ route, navigation }) {
   const { guid, isHost, setGuid, setServerUrl, setPlayerNumber } = usePlayer();
   const [serverIP, setServerIP] = useState("Loading...............");
   const [players, setPlayers] = useState([]);
 
-  const serverUrl = route.params?.serverIP ?? API_BASE;
+  const { serverUrl: contextUrl } = usePlayer();
+  const serverUrl = route.params?.serverIP ?? contextUrl;
   const playerGUID = route.params?.playerGUID ?? guid;
 
   const startingRef = useRef(false);
@@ -65,7 +66,7 @@ export default function PlayerWaitingScreen({ route, navigation }) {
 
     const fetchServerIP = async () => {
       try {
-        const res = await fetch(`${API_BASE}/server-info`);
+        const res = await fetch(`${serverUrl}/server-info`);
         const data = await res.json();
         if (isMounted) {
           if (data.ready && data.serverIP) {
@@ -84,7 +85,7 @@ export default function PlayerWaitingScreen({ route, navigation }) {
 
     const fetchPlayers = async () => {
       try {
-        const res = await fetch(`${API_BASE}/players`);
+        const res = await fetch(`${serverUrl}/server-info`);
         const data = await res.json();
         if (isMounted) setPlayers(data);
       } catch (err) {
@@ -98,7 +99,7 @@ export default function PlayerWaitingScreen({ route, navigation }) {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [serverUrl]);
 
   const copyToClipboard = () => {
     console.log("[DEBUG] Copy IP:", serverIP);

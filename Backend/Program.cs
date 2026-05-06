@@ -46,16 +46,18 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll",
         policy =>
         {
-            policy.AllowCredentials()
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .WithOrigins(
+            policy.WithOrigins(
                     "http://localhost:8081",
                     "https://incolaeterrae.com",
                     "https://github.com/WillGeis.github.io"
-                );
+                )
+                .AllowCredentials()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
         });
 });
+
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -383,7 +385,8 @@ async Task BroadcastGameUpdate(IHubContext<GameHub> hubContext)
         Console.WriteLine($"[GAME] Player {winner.Value} has won!");
     }
 }
-
+app.UseAuthorization();
+app.MapControllers();
 app.Run();
 
 public class JoinRequest
