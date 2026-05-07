@@ -11,6 +11,7 @@ using System.Data.SqlTypes;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.IO;
+using System.Linq;
 
 /*
 note to self, run `dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true --self-contained true`
@@ -2379,7 +2380,7 @@ public static class GameState
         //Console.WriteLine("[RESOURCE MAP KEYS] " + string.Join("", ResourceMap.Keys.Select(k => $"({k.Item1},{k.Item2}), ")));
         if (ResourceMap.ContainsKey((XRobber, YRobber)))
         {
-            Console.WriteLine("[ROBBER] condition tripped");
+            //Console.WriteLine("[ROBBER] condition tripped");
             var oldCoords = (Globals.GameVars.RobberCoordinates[0], Globals.GameVars.RobberCoordinates[1]);
             var oldEntry = ResourceMap[oldCoords][0];
             oldEntry.hasRobber = false;
@@ -3589,14 +3590,77 @@ public class MoveResult
     public string? EventType { get; set; }
 }
 
+public class ResourceMapEntry
+{
+    public (int, int) Key { get; set; }
+    public List<(int, int, bool)> Value { get; set; }
+}
+
+public class NodeGraphEntry
+{
+    public (int, double) Key { get; set; }
+    public Node Value { get; set; }
+}
+
+public class BoatConnectionEntry
+{
+    public (int, double) Key { get; set; }
+    public int Value { get; set; }
+}
+
+public class GameVarsSaveDTO
+{
+    public int MapSize { get; set; }
+    public int MapType { get; set; }
+    public int NumTilesTotal { get; set; }
+    public int WinCondition { get; set; }
+    public int WinPoints { get; set; }
+    public bool GameInitialized { get; set; }
+    public bool RegisterPlayer { get; set; }
+    public int CurrentPlayerTurnGlobal { get; set; }
+    public bool StartPhase { get; set; }
+    public int[] RobberCoordinates { get; set; }
+    public int Turn { get; set; }
+    public List<Player> Players { get; set; }
+    public Dictionary<Guid, GameState.Trade> Trades { get; set; }
+    public Dictionary<int, string> DevelopmentCardDirectory { get; set; }
+    public Dictionary<double, int> NodeLayout { get; set; }
+    public List<ResourceMapEntry> ResourceMap { get; set; }
+    public List<NodeGraphEntry> NodeGraph { get; set; }
+    public List<BoatConnectionEntry> BoatConnections { get; set; }
+}
+
 public static class GameSave
 {
-    public static string filePath = "./saveFile";
+    public static string filePath = "./saveFile.json";
+
     public static void SaveGame(GameVars data)
     {
-        var options = new JsonSerializerOptions { WriteIndented = true };
-        string jsonString = JsonSerializer.Serialize(data, options);
-        
+        var options = new JsonSerializerOptions {  WriteIndented = true, IncludeFields = true };
+
+        var saveState = new GameVarsSaveDTO
+        {
+            MapSize = data.MapSize,
+            MapType = data.MapType,
+            NumTilesTotal = data.NumTilesTotal,
+            WinCondition = data.WinCondition,
+            WinPoints = data.WinPoints,
+            GameInitialized = data.GameInitialized,
+            RegisterPlayer = data.RegisterPlayer,
+            CurrentPlayerTurnGlobal = data.CurrentPlayerTurnGlobal,
+            StartPhase = data.StartPhase,
+            RobberCoordinates = data.RobberCoordinates,
+            Turn = data.Turn,
+            Players = data.Players,
+            Trades = data.Trades,
+            DevelopmentCardDirectory = data.DevelopmentCardDirectory,
+            NodeLayout = data.NodeLayout,
+            ResourceMap = data.ResourceMap.Select(kv => new ResourceMapEntry { Key = kv.Key, Value = kv.Value }).ToList(),
+            NodeGraph = data.NodeGraph.Select(kv => new NodeGraphEntry { Key = kv.Key, Value = kv.Value }).ToList(),
+            BoatConnections = data.BoatConnections.Select(kv => new BoatConnectionEntry { Key = kv.Key, Value = kv.Value }).ToList()
+        };
+
+        string jsonString = JsonSerializer.Serialize(saveState, options);
         File.WriteAllText(filePath, jsonString);
     }
 
@@ -3605,6 +3669,30 @@ public static class GameSave
         if (!File.Exists(filePath)) return null;
 
         string jsonString = File.ReadAllText(filePath);
-        return JsonSerializer.Deserialize<GameVars>(jsonString);
+        var saveState = JsonSerializer.Deserialize<GameVarsSaveDTO>(jsonString);
+
+        if (saveState == null) return null;
+
+        return new GameVars
+        {
+            MapSize = saveState.MapSize,
+            MapType = saveState.MapType,
+            NumTilesTotal = saveState.NumTilesTotal,
+            WinCondition = saveState.WinCondition,
+            WinPoints = saveState.WinPoints,
+            GameInitialized = saveState.GameInitialized,
+            RegisterPlayer = saveState.RegisterPlayer,
+            CurrentPlayerTurnGlobal = saveState.CurrentPlayerTurnGlobal,
+            StartPhase = saveState.StartPhase,
+            RobberCoordinates = saveState.RobberCoordinates,
+            Turn = saveState.Turn,
+            Players = saveState.Players,
+            Trades = saveState.Trades,
+            DevelopmentCardDirectory = saveState.DevelopmentCardDirectory,
+            NodeLayout = saveState.NodeLayout,
+            ResourceMap = saveState.ResourceMap.ToDictionary(x => x.Key, x => x.Value),
+            NodeGraph = saveState.NodeGraph.ToDictionary(x => x.Key, x => x.Value),
+            BoatConnections = saveState.BoatConnections.ToDictionary(x => x.Key, x => x.Value)
+        };
     }
 }

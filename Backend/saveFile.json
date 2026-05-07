@@ -1,0 +1,2756 @@
+{
+  "MapSize": 7,
+  "MapType": 1,
+  "NumTilesTotal": 30,
+  "WinCondition": 1,
+  "WinPoints": 10,
+  "GameInitialized": true,
+  "RegisterPlayer": false,
+  "CurrentPlayerTurnGlobal": 1,
+  "StartPhase": false,
+  "RobberCoordinates": [
+    5,
+    2
+  ],
+  "Turn": 0,
+  "Players": [
+    {
+      "PlayerID": 0,
+      "Username": "will 1",
+      "GUID": "44fdef8b-375b-427a-a4bc-b5c5ffceacfa",
+      "ConnectionId": "Obx_2zwfK9QDPiKUkzK6Qw",
+      "IsHost": true,
+      "LastSeen": "2026-05-07T14:11:34.4870206Z",
+      "IsConnected": true,
+      "Wheat": 0,
+      "Bricks": 0,
+      "Ore": 0,
+      "Wood": 0,
+      "Sheep": 0,
+      "Settlements": [
+        {
+          "Item1": 4,
+          "Item2": 2.5
+        },
+        {
+          "Item1": 1,
+          "Item2": 2.5
+        }
+      ],
+      "Cities": [],
+      "Roads": [
+        {
+          "Item1": 3,
+          "Item2": 4,
+          "Item3": 2,
+          "Item4": 2.5
+        },
+        {
+          "Item1": 1,
+          "Item2": 1,
+          "Item3": 2.5,
+          "Item4": 2
+        }
+      ],
+      "DevelopmentCards": [],
+      "KnightsPlayed": 0,
+      "HasLargestArmy": false,
+      "HasLongestRoad": false,
+      "ExtraPoints": 0,
+      "gameStartupPhaseSettlementsPlaced": 0
+    },
+    {
+      "PlayerID": 1,
+      "Username": "will 2",
+      "GUID": "7fb45297-cb67-4b45-a336-952b05313d21",
+      "ConnectionId": "5bZiEJLCg6Smp7pEEjJJ9g",
+      "IsHost": false,
+      "LastSeen": "2026-05-07T14:11:34.190757Z",
+      "IsConnected": true,
+      "Wheat": 0,
+      "Bricks": 0,
+      "Ore": 0,
+      "Wood": 0,
+      "Sheep": 0,
+      "Settlements": [
+        {
+          "Item1": 3,
+          "Item2": 3
+        },
+        {
+          "Item1": 3,
+          "Item2": 5
+        }
+      ],
+      "Cities": [],
+      "Roads": [
+        {
+          "Item1": 3,
+          "Item2": 3,
+          "Item3": 2.5,
+          "Item4": 3
+        },
+        {
+          "Item1": 3,
+          "Item2": 3,
+          "Item3": 5,
+          "Item4": 5.5
+        }
+      ],
+      "DevelopmentCards": [],
+      "KnightsPlayed": 0,
+      "HasLargestArmy": false,
+      "HasLongestRoad": false,
+      "ExtraPoints": 0,
+      "gameStartupPhaseSettlementsPlaced": 0
+    }
+  ],
+  "Trades": null,
+  "DevelopmentCardDirectory": null,
+  "NodeLayout": {
+    "0": 3,
+    "0.5": 4,
+    "1": 4,
+    "1.5": 5,
+    "2": 5,
+    "2.5": 6,
+    "3": 6,
+    "3.5": 7,
+    "4": 7,
+    "4.5": 6,
+    "5": 6,
+    "5.5": 5,
+    "6": 5,
+    "6.5": 4,
+    "7": 4,
+    "7.5": 3
+  },
+  "ResourceMap": [
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 0
+      },
+      "Value": [
+        {
+          "Item1": 5,
+          "Item2": 8,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 1
+      },
+      "Value": [
+        {
+          "Item1": 1,
+          "Item2": 2,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 2
+      },
+      "Value": [
+        {
+          "Item1": 5,
+          "Item2": 10,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 0
+      },
+      "Value": [
+        {
+          "Item1": 4,
+          "Item2": 5,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 1
+      },
+      "Value": [
+        {
+          "Item1": 5,
+          "Item2": 2,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 2
+      },
+      "Value": [
+        {
+          "Item1": 1,
+          "Item2": 10,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 3
+      },
+      "Value": [
+        {
+          "Item1": 1,
+          "Item2": 6,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 0
+      },
+      "Value": [
+        {
+          "Item1": 1,
+          "Item2": 3,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 1
+      },
+      "Value": [
+        {
+          "Item1": 2,
+          "Item2": 6,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 2
+      },
+      "Value": [
+        {
+          "Item1": 6,
+          "Item2": 11,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 3
+      },
+      "Value": [
+        {
+          "Item1": 4,
+          "Item2": 6,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 4
+      },
+      "Value": [
+        {
+          "Item1": 6,
+          "Item2": 9,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 0
+      },
+      "Value": [
+        {
+          "Item1": 2,
+          "Item2": 11,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 1
+      },
+      "Value": [
+        {
+          "Item1": 4,
+          "Item2": 9,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 2
+      },
+      "Value": [
+        {
+          "Item1": 2,
+          "Item2": 5,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 3
+      },
+      "Value": [
+        {
+          "Item1": 2,
+          "Item2": 8,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 4
+      },
+      "Value": [
+        {
+          "Item1": 3,
+          "Item2": 3,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 5
+      },
+      "Value": [
+        {
+          "Item1": 3,
+          "Item2": 9,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 0
+      },
+      "Value": [
+        {
+          "Item1": 3,
+          "Item2": 8,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 1
+      },
+      "Value": [
+        {
+          "Item1": 2,
+          "Item2": 5,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 2
+      },
+      "Value": [
+        {
+          "Item1": 3,
+          "Item2": 5,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 3
+      },
+      "Value": [
+        {
+          "Item1": 3,
+          "Item2": 9,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 4
+      },
+      "Value": [
+        {
+          "Item1": 4,
+          "Item2": 3,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 5,
+        "Item2": 0
+      },
+      "Value": [
+        {
+          "Item1": 2,
+          "Item2": 5,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 5,
+        "Item2": 1
+      },
+      "Value": [
+        {
+          "Item1": 3,
+          "Item2": 9,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 5,
+        "Item2": 2
+      },
+      "Value": [
+        {
+          "Item1": 4,
+          "Item2": 4,
+          "Item3": true
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 5,
+        "Item2": 3
+      },
+      "Value": [
+        {
+          "Item1": 2,
+          "Item2": 4,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 6,
+        "Item2": 0
+      },
+      "Value": [
+        {
+          "Item1": 3,
+          "Item2": 5,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 6,
+        "Item2": 1
+      },
+      "Value": [
+        {
+          "Item1": 3,
+          "Item2": 4,
+          "Item3": false
+        }
+      ]
+    },
+    {
+      "Key": {
+        "Item1": 6,
+        "Item2": 2
+      },
+      "Value": [
+        {
+          "Item1": 2,
+          "Item2": 4,
+          "Item3": false
+        }
+      ]
+    }
+  ],
+  "NodeGraph": [
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 0
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 0.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 0
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 0.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 0
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 0.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 0.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 0
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 1
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 0.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 0
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 0
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 1
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 0.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 0
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 0
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 1
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 0.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 0
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 1
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 1
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 0.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 1.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 1.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 1
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 0.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 1.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 1.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 1
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 0.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 1.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 1.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 1
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 0.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 1.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 1.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 1.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 1
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 2
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 1.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 1
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 1
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 2
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 1.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 1
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 1
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 2
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 1.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 1
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 1
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 2
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 1.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 1
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 2
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 2
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 1.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 2.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 2.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 2
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 1.5
+          },
+          {
+            "RoadPlayerID": 0,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 2.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 2.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 2
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 1.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 2.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 2.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 2
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 1.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 2.5
+          },
+          {
+            "RoadPlayerID": 0,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 2.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 2
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 1.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 2.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 5,
+            "ConnectedNodeY": 2.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 2.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 2
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 3
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 2.5
+      },
+      "Value": {
+        "SettlementPlayerID": 0,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 2
+          },
+          {
+            "RoadPlayerID": 0,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 2
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 3
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 2.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 2
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 2
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 3
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 2.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 2
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 2
+          },
+          {
+            "RoadPlayerID": 1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 3
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 2.5
+      },
+      "Value": {
+        "SettlementPlayerID": 0,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": 0,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 2
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 2
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 3
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 5,
+        "Item2": 2.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 2
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 5,
+            "ConnectedNodeY": 3
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 3
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 2.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 3.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 3.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 3
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 2.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 3.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 3.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 3
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 2.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 3.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 3.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 3
+      },
+      "Value": {
+        "SettlementPlayerID": 1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": 1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 2.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 3.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 3.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 3
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 2.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 3.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 5,
+            "ConnectedNodeY": 3.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 5,
+        "Item2": 3
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 5,
+            "ConnectedNodeY": 2.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 5,
+            "ConnectedNodeY": 3.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 6,
+            "ConnectedNodeY": 3.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 3.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 3
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 4
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 3.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 3
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 3
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 4
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 3.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 3
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 3
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 4
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 3.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 3
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 3
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 4
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 3.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 3
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 3
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 4
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 5,
+        "Item2": 3.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 3
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 5,
+            "ConnectedNodeY": 3
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 5,
+            "ConnectedNodeY": 4
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 6,
+        "Item2": 3.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 5,
+            "ConnectedNodeY": 3
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 6,
+            "ConnectedNodeY": 4
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 4
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 3.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 4.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 4
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 3.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 4.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 4.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 4
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 3.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 4.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 4.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 4
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 3.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 4.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 4.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 4
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 3.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 4.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 4.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 5,
+        "Item2": 4
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 5,
+            "ConnectedNodeY": 3.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 5,
+            "ConnectedNodeY": 4.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 4.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 6,
+        "Item2": 4
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 6,
+            "ConnectedNodeY": 3.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 5,
+            "ConnectedNodeY": 4.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 4.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 4
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 4
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 4.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 4
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 4
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 4.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 4
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 4
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 4.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 4
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 4
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 4.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 4
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 5,
+            "ConnectedNodeY": 4
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 5,
+        "Item2": 4.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 5,
+            "ConnectedNodeY": 4
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 6,
+            "ConnectedNodeY": 4
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 5,
+            "ConnectedNodeY": 5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 4.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 5.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 4.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 5.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 5.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 4.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 5.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 5.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 5
+      },
+      "Value": {
+        "SettlementPlayerID": 1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 4.5
+          },
+          {
+            "RoadPlayerID": 1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 5.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 5.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 4.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 5.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 5.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 5,
+        "Item2": 5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 5,
+            "ConnectedNodeY": 4.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 5.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 5.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 6
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 5.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 6
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 5.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 6
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 5.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": 1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 6
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 5.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 5,
+            "ConnectedNodeY": 5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 6
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 6
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 5.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 6.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 6
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 5.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 6.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 6.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 6
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 5.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 6.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 6.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 6
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 5.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 6.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 6.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 6
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 5.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 6.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 6.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 6
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 6
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 7
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 6.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 6
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 6
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 7
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 6.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 6
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 6
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 7
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 6.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 6
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 4,
+            "ConnectedNodeY": 6
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 7
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 7
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 6.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 7.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 7
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 6.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 7.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 7.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 7
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 6.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 7.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 7.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 7
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 6.5
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 7.5
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 7.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 7
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 0,
+            "ConnectedNodeY": 7
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 7.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 7
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 1,
+            "ConnectedNodeY": 7
+          }
+        ]
+      }
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 7.5
+      },
+      "Value": {
+        "SettlementPlayerID": -1,
+        "IsCity": false,
+        "Edges": [
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 3,
+            "ConnectedNodeY": 7
+          },
+          {
+            "RoadPlayerID": -1,
+            "ConnectedNodeX": 2,
+            "ConnectedNodeY": 7
+          }
+        ]
+      }
+    }
+  ],
+  "BoatConnections": [
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 0.5
+      },
+      "Value": 5
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 0
+      },
+      "Value": 5
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 0
+      },
+      "Value": 5
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 0.5
+      },
+      "Value": 5
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 0.5
+      },
+      "Value": 5
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 1
+      },
+      "Value": 5
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 2
+      },
+      "Value": 3
+    },
+    {
+      "Key": {
+        "Item1": 5,
+        "Item2": 2.5
+      },
+      "Value": 3
+    },
+    {
+      "Key": {
+        "Item1": 6,
+        "Item2": 3.5
+      },
+      "Value": 2
+    },
+    {
+      "Key": {
+        "Item1": 6,
+        "Item2": 4
+      },
+      "Value": 2
+    },
+    {
+      "Key": {
+        "Item1": 5,
+        "Item2": 5
+      },
+      "Value": 2
+    },
+    {
+      "Key": {
+        "Item1": 4,
+        "Item2": 5.5
+      },
+      "Value": 2
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 6.5
+      },
+      "Value": 5
+    },
+    {
+      "Key": {
+        "Item1": 3,
+        "Item2": 7
+      },
+      "Value": 5
+    },
+    {
+      "Key": {
+        "Item1": 2,
+        "Item2": 7
+      },
+      "Value": 3
+    },
+    {
+      "Key": {
+        "Item1": 1,
+        "Item2": 7.5
+      },
+      "Value": 3
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 7.5
+      },
+      "Value": 2
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 7
+      },
+      "Value": 2
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 6
+      },
+      "Value": 5
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 5.5
+      },
+      "Value": 5
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 4.5
+      },
+      "Value": 4
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 4
+      },
+      "Value": 4
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 3
+      },
+      "Value": 4
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 2.5
+      },
+      "Value": 4
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 1.5
+      },
+      "Value": 4
+    },
+    {
+      "Key": {
+        "Item1": 0,
+        "Item2": 1
+      },
+      "Value": 4
+    }
+  ]
+}

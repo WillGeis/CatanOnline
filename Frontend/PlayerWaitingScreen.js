@@ -112,14 +112,13 @@ export default function PlayerWaitingScreen({ route, navigation }) {
   };
 
   const handleStartGame = async () => {
-    console.log("[DEBUG] Go button pressed!");
-    console.log("[DEBUG] Host GUID:", guid);
-
+    console.log(`[DEBUG] Go button pressed! API called: ${serverIP}/startGame`);
+    //console.log("[DEBUG] Host GUID:", guid);
     if (startingRef.current) return;
     startingRef.current = true;
 
     try {
-      const res = await fetch(`${API_BASE}/startGame`, {
+      const res = await fetch(`${serverIP}/startGame`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}),
