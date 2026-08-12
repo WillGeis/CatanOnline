@@ -197,6 +197,12 @@ app.MapPost("/host", (HostGameRequest req) =>
         Globals.GameVars.StartPhase = true;
     }
 
+    string roomCode = Guid.NewGuid().ToString("N")[..6].ToUpper(); // e.g. "A3F9B2"
+    var room = GameRooms.CreateRoom(roomCode);
+
+    room.Vars.MapSize = req.MapSize;
+
+
     var existingHost = GameState.GetPlayers()
         .FirstOrDefault(p => p.Username == req.HostUsername && p.IsHost);
 
@@ -236,6 +242,8 @@ app.MapPost("/host", (HostGameRequest req) =>
 
 app.MapPost("/join", (JoinRequest? req) =>
 {
+    var room = GameRooms.GetRoom(req.RoomCode);
+    if (room == null) return Results.BadRequest("Room not found");
     if (req == null || string.IsNullOrEmpty(req.Username))
         return Results.BadRequest("[PLAYER REGISTRATION] No username provided");
 
@@ -290,7 +298,7 @@ app.MapPost("/startGame", async (HttpContext http) =>
 
     var gameState = GameState.GameStateObject();
     await hubContext.Clients.Group("game").SendAsync("GameStateUpdated", gameState);
-    foreach (var p in GameState.GetPlayers().Where(p => p.IsConnected))
+    foreach (var p in GameState.GetPlayers().Where(p => p.IsConnected && p.ConnectionId != null))
     {
         var playerState = GameState.PlayerStateObject(p.PlayerID);
         await hubContext.Clients.Client(p.ConnectionId).SendAsync("PlayerStateUpdated", playerState);
@@ -306,7 +314,7 @@ app.MapPost("/startGameFromSaveFile", async (HttpContext http) =>
 
     var gameState = GameState.GameStateObject();
     await hubContext.Clients.Group("game").SendAsync("GameStateUpdated", gameState);
-    foreach (var p in GameState.GetPlayers().Where(p => p.IsConnected))
+    foreach (var p in GameState.GetPlayers().Where(p => p.IsConnected && p.ConnectionId != null))
     {
         var playerState = GameState.PlayerStateObject(p.PlayerID);
         await hubContext.Clients.Client(p.ConnectionId).SendAsync("PlayerStateUpdated", playerState);
@@ -373,7 +381,7 @@ async Task BroadcastGameUpdate(IHubContext<GameHub> hubContext)
 
     await hubContext.Clients.Group("game").SendAsync("GameStateUpdated", gameState);
 
-    foreach (var p in GameState.GetPlayers().Where(p => p.IsConnected))
+    foreach (var p in GameState.GetPlayers().Where(p => p.IsConnected && p.ConnectionId != null))
     {
         var playerState = GameState.PlayerStateObject(p.PlayerID);
         await hubContext.Clients.Client(p.ConnectionId).SendAsync("PlayerStateUpdated", playerState);
@@ -459,29 +467,33 @@ public class GameHub : Hub
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        Console.WriteLine($"[SIGNALR] Client disconnected: {Context.ConnectionId}");
+        foreach (var room in GameRooms.GetAllRooms())
+        {
+            var player = room.Players.FirstOrDefault(p => p.ConnectionId == Context.ConnectionId);
+            if (player != null)
+            {
+                player.IsConnected = false;
+                player.ConnectionId = null;
+                break;
+            }
+        }
         await base.OnDisconnectedAsync(exception);
     }
 
-    public async Task JoinRoom(string guid)
+    public async Task JoinRoom(string guid, string roomCode)
     {
-        var player = GameState.GetPlayers()
-            .FirstOrDefault(p => p.GUID.ToString() == guid);
+        var room = GameRooms.GetRoom(roomCode);
+        if (room == null) { await Clients.Caller.SendAsync("Error", "Room not found"); return; }
 
-        if (player == null)
-        {
-            await Clients.Caller.SendAsync("Error", "[ERROR] Player not found");
-            return;
-        }
+        var player = room.Players.FirstOrDefault(p => p.GUID.ToString() == guid);
+        if (player == null) { await Clients.Caller.SendAsync("Error", "Player not found"); return; }
 
         player.ConnectionId = Context.ConnectionId;
         player.IsConnected = true;
-        player.LastSeen = DateTime.UtcNow;
+        player.RoomCode = roomCode;
 
-        await Groups.AddToGroupAsync(Context.ConnectionId, "game");
-        Console.WriteLine($"[SIGNALR] {player.Username} joined room!");
-
-        await Clients.Group("game").SendAsync("PlayerJoined", player.Username);
+        await Groups.AddToGroupAsync(Context.ConnectionId, roomCode);
+        await Clients.Group(roomCode).SendAsync("PlayerJoined", player.Username);
     }
     public async Task PlayerMove(string guid, int moveType, string moveDataJson)
     {
@@ -511,7 +523,7 @@ public class GameHub : Hub
                 var gameState = GameState.GameStateObject();
                 await Clients.Group("game").SendAsync("GameStateUpdated", gameState);
 
-                foreach (var p in GameState.GetPlayers().Where(p => p.IsConnected))
+                foreach (var p in GameState.GetPlayers().Where(p => p.IsConnected && p.ConnectionId != null))
                 {
                     var playerState = GameState.PlayerStateObject(p.PlayerID);
                     await Clients.Client(p.ConnectionId).SendAsync("PlayerStateUpdated", playerState);
@@ -913,6 +925,7 @@ public static class GameState
             mapSizejson = MapSizeGlobal,
             currentDiceRoll = CurrentDiceRoll,
             currentPlayerIndex = _currentPlayerIndex,
+            chatjson = PackageChatData(),
         };
     }
     
@@ -977,6 +990,12 @@ public static class GameState
             PlayerNamesList[i] = p.Username;
             i++;
         }
+    }
+
+    private static int[] PackageVictimsData()
+    {
+        if (PossibleVictims.Count == 0) return new int[] { -1 };
+        return PossibleVictims.ToArray();
     }
 
     /*
@@ -1144,11 +1163,25 @@ public static class GameState
         return new int[] {result, p};
     }
 
+    public static object[] PackageChatData()
+    {
+        return chats.Values
+            .OrderBy(c => c.messageDateTime)
+            .Select(c => new {
+                playerID = c.PlayerID,
+                playerName = c.PlayerName,
+                message = c.message,
+                messageID = c.messageID,
+                timestamp = c.messageDateTime
+            })
+            .ToArray();
+    }
+
+
     private static int[] PackageVictimsData()
     {
         if (robberActive == true)
         {
-            robberActive = false;
             if (PossibleVictims.Count == 0)
             {
                 return new int[] { -1 };
@@ -2392,6 +2425,13 @@ public static class GameState
             var newEntry = ResourceMap[(XRobber, YRobber)][0];
             newEntry.hasRobber = true;
             ResourceMap[(XRobber, YRobber)][0] = newEntry;
+
+            PossibleVictims = GetPlayersFromHex(XRobber, YRobber)
+                .Where(id => id != PlayerID)  
+                .ToList();
+
+            robberActive = PossibleVictims.Count > 0;
+
             List<int> connectedPlayers = GetPlayersFromHex(XRobber, YRobber);
             return new MoveResult { Success = true, EventType = "RobberMoved" };
         }
@@ -2414,34 +2454,17 @@ public static class GameState
 
         switch (resourceStolen)
         {
-            case 0:
-                {
-                    Players[VictimID].Wheat--;
-                    break;
-                }
-            case 1:
-                {
-                    Players[VictimID].Bricks--;
-                    break;
-                }
-            case 2:
-                {
-                    Players[VictimID].Ore--;
-                    break;
-                }  
-            case 3:
-                {
-                    Players[VictimID].Wood--;
-                    break;
-                }
-            case 4:
-                {
-                    Players[VictimID].Sheep--;
-                    break;
-                }
+            case 0: Players[VictimID].Wheat--; break;
+            case 1: Players[VictimID].Bricks--; break;
+            case 2: Players[VictimID].Ore--; break;
+            case 3: Players[VictimID].Wood--; break;
+            case 4: Players[VictimID].Sheep--; break;
         }
 
-        return new MoveResult {Success = true, EventType = "resourceStolen"};
+        robberActive = false;
+        PossibleVictims.Clear();
+
+        return new MoveResult { Success = true, EventType = "resourceStolen" };
     }
 
     /*
@@ -3566,7 +3589,7 @@ public class Player
     public string? ConnectionId { get; set; }
     public bool IsHost { get; set; } = false;
     public DateTime LastSeen { get; set; } = DateTime.UtcNow;
-    public bool IsConnected { get; set; } = true; 
+    public bool IsConnected { get; set; } = false; 
     public int Wheat { get; set; }
     public int Bricks { get; set; }
     public int Ore { get; set; }
@@ -3581,6 +3604,7 @@ public class Player
     public bool HasLongestRoad { get; set; }
     public int ExtraPoints { get; set; }
     public int gameStartupPhaseSettlementsPlaced { get;  set; } = 0;
+    public string? RoomCode { get; set; }
 }
 
 public class MoveResult
@@ -3694,5 +3718,58 @@ public static class GameSave
             NodeGraph = saveState.NodeGraph.ToDictionary(x => x.Key, x => x.Value),
             BoatConnections = saveState.BoatConnections.ToDictionary(x => x.Key, x => x.Value)
         };
+    }
+}
+
+public class GameInstance
+{
+    public string RoomCode { get; set; }
+    public GameVars Vars { get; set; } = new();
+    public List<Player> Players { get; set; } = new();
+    public int NextPlayerId { get; set; } = 0;
+    public Dictionary<(int x, int y), List<(int resourceTypeID, int resourceRoll, bool hasRobber)>> ResourceMap { get; set; }
+    public Dictionary<(int x, double y), Node> NodeGraph { get; set; }
+    public Dictionary<double, int> NodeLayout { get; set; }
+    public Dictionary<(int x, double y), int> BoatConnections { get; set; }
+    public Dictionary<int, (int x, double y)> PerimeterNodes { get; set; }
+    public Dictionary<Guid, GameState.Trade> Trades { get; set; } = new();
+    public Dictionary<Guid, GameState.ChatMessageStorage> Chats { get; set; } = new();
+    public Dictionary<int, string> DevelopmentCardDirectory { get; set; } = new();
+    public bool GameStarted { get; set; } = false;
+    public bool RobberActive { get; set; } = false;
+    public int CurrentDiceRoll { get; set; } = -1;
+    public int CurrentPlayerIndex { get; set; } = 0;
+    public bool SnakingBack { get; set; } = false;
+    public int MapSizeGlobal { get; set; }
+    public List<int> PossibleVictims { get; set; } = new();
+    public string[] PlayerNamesList { get; set; }
+}
+
+public static class GameRooms
+{
+    private static readonly Dictionary<string, GameInstance> _rooms = new();
+    private static readonly object _lock = new();
+
+    public static GameInstance CreateRoom(string roomCode)
+    {
+        lock (_lock)
+        {
+            var instance = new GameInstance { RoomCode = roomCode };
+            _rooms[roomCode] = instance;
+            return instance;
+        }
+    }
+
+    public static GameInstance? GetRoom(string roomCode)
+    {
+        _rooms.TryGetValue(roomCode, out var instance);
+        return instance;
+    }
+
+    public static bool RoomExists(string roomCode) => _rooms.ContainsKey(roomCode);
+
+    public static void RemoveRoom(string roomCode)
+    {
+        lock (_lock) { _rooms.Remove(roomCode); }
     }
 }
